@@ -1,0 +1,16 @@
+<li class="sidebar-item" *ngFor="let menu of menuProperties">
+    
+    <a (click)="navigate(menu.url)" class="sidebar-link" data-bs-toggle = "collapse" [attr.data-bs-target]="'#' + menu.id" [attr.aria-controls]="menu.titre"
+        aria-expanded="false">
+        <fa-icon [icon]="menu.icon" class="pe-2"></fa-icon>&nbsp;
+        {{menu.titre}}
+    </a>
+    <ul id="{{menu.id}}" class="collapse list-unstyled" *ngFor="let sousMenu of menu.sousMenu">
+        <li class="sidebar-item ps-4">
+            <a href="javascript:void(0);" (click)="navigate(sousMenu.url)" class="sidebar-link">
+                {{sousMenu.titre}}
+            </a>
+        </li>
+    </ul>
+</li>
+

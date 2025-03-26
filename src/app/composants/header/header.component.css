@@ -1,0 +1,8 @@
+
+.navbar-expand .navbar-nav {
+margin-left: auto;
+}
+
+.main .navbar-nav .navbar-item a {
+font-size: .8rem;
+}
