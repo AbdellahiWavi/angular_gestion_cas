@@ -1,0 +1,65 @@
+<div class="container-fluid">
+    <div class="mb-3 d-flex justify-content-between">
+        <h4>{{ title }}</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Utilisateurs</a></li>
+            <li class="breadcrumb-item active">{{ title }}</li>
+        </ol>
+    </div>
+    <div class="alert alert-success" *ngIf="successMsg">
+        {{successMsg}}
+    </div>
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">{{ title }}</h6>
+    </div>
+    <div class="card-body">
+        <div class="col-auto">
+            <button type="button" class="btn btn-outline-primary" [routerLink]="['/inscrire']">Ajouter utilisateur</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>username</th>
+                        <th>email</th>
+                        <th>role</th>
+                        <th>Action</th>
+                        <th>password</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>ID</th>
+                        <th>username</th>
+                        <th>email</th>
+                        <th>role</th>
+                        <th>Action</th>
+                        <th>password</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    <tr *ngFor="let gestionnaire of gestionnaires">
+                        <td>{{gestionnaire.id}}</td>
+                        <td>{{gestionnaire.username}}</td>
+                        <td>{{gestionnaire.email}}</td>
+                        <td>
+                            @for (role of gestionnaire.roles; track role.id) {
+                                {{role.role}}
+                            }
+                        </td>
+                        <td>
+                            <div class="col-1 mb-1">
+                                <button type="button" (click)="updateRole(gestionnaire)" class="btn btn-outline-primary">Modifier_Role</button>
+                            </div>
+                        </td>
+                        <td>{{gestionnaire.password}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</div>

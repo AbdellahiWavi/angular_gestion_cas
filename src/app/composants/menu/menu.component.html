@@ -5,12 +5,12 @@
         <fa-icon [icon]="menu.icon" class="pe-2"></fa-icon>&nbsp;
         {{menu.titre}}
     </a>
-    <ul id="{{menu.id}}" class="collapse list-unstyled" *ngFor="let sousMenu of menu.sousMenu">
-        <li class="sidebar-item ps-4">
-            <a href="javascript:void(0);" (click)="navigate(sousMenu.url)" class="sidebar-link">
+    <div id="{{menu.id}}" class="collapse" *ngFor="let sousMenu of menu.sousMenu">
+        <div class="sidebar-item px-2 my-2" [class.active]="currentUrl === sousMenu.url">
+            <a href="javascript:void(0);" (click)="navigate(sousMenu.url)" class="sidebar-link collapse-item">
                 {{sousMenu.titre}}
             </a>
-        </li>
-    </ul>
+        </div>
+    </div>
 </li>
 

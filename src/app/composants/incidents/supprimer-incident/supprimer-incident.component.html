@@ -1,0 +1,21 @@
+<div class="container-fluid">
+    <div class="mb-3 d-flex justify-content-between">
+        <h4>{{ title }}</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Incidents</a></li>
+            <li class="breadcrumb-item active">{{ title }}</li>
+        </ol>
+    </div>
+
+    <div class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label for="status" class="col-form-label">ID:</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" class="form-control">
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-outline-danger" (click)="delete()">Supprimer</button>
+        </div>
+        </div>
+</div>

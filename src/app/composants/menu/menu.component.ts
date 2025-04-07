@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { faList, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faGenderless, faList, faUser } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
 import { Menu } from './menu';
 
@@ -13,6 +13,8 @@ export class MenuComponent {
   
   faList = faList;
   faUser = faUser;
+  faGenderless = faGenderless;
+  currentUrl? = '';
 
   public menuProperties: Array<Menu> = [
     {
@@ -31,19 +33,19 @@ export class MenuComponent {
           id: '13',
           titre: 'Non Affecté',
           icon: '',
-          url: ''
+          url: '/nonAffecte'
         },
         {
           id: '14',
           titre: 'Mettre à jour incident',
           icon: '',
-          url: ''
+          url: '/updateIncident'
         },
         {
           id: '15',
           titre: 'Supprimer incident',
           icon: '',
-          url: ''
+          url: '/deleteIncident'
         }
       ]
     },
@@ -57,19 +59,59 @@ export class MenuComponent {
           id: '21',
           titre: 'Tableau des utilisateurs',
           icon: '',
-          url: ''
-        },
-        {
-          id: '22',
-          titre: 'Mettre à jour utilisateur',
-          icon: '',
-          url: ''
+          url: '/displayAllUser'
         },
         {
           id: '22',
           titre: 'Supprimer utilisateur',
           icon: '',
-          url: ''
+          url: '/deleteUser'
+        }
+      ]
+    },
+    {
+      id: '3',
+      titre: 'Roles',
+      icon: faGenderless,
+      url: '',
+      sousMenu: [
+        {
+          id: '31',
+          titre: 'Tableau des roles',
+          icon: '',
+          url: '/displayAllRoles'
+        },
+        {
+          id: '32',
+          titre: 'Ajouter de role',
+          icon: '',
+          url: '/addRole'
+        },
+        {
+          id: '33',
+          titre: 'Supprimer de role',
+          icon: '',
+          url: '/deleteRole'
+        }
+      ]
+    },
+    {
+      id: '4',
+      titre: 'Clients',
+      icon: faUser,
+      url: '',
+      sousMenu: [
+        {
+          id: '41',
+          titre: 'Tableau des clients',
+          icon: '',
+          url: '/displayAllClients'
+        },
+        {
+          id: '42',
+          titre: 'Supprimer client',
+          icon: '',
+          url: '/deleteClient'
         }
       ]
     }
@@ -79,5 +121,7 @@ export class MenuComponent {
 
   navigate(url: string | undefined): void {
     this.router.navigate([url]);
-  }
+    this.currentUrl = url;
+  }  
+
 }

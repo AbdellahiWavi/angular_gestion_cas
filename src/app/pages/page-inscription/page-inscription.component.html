@@ -1,27 +1,31 @@
 <div class="container my-container">
-    <div class="card text-center mx-auto" style="width: 18rem;">
-      <div class="card-body">
-        <h5 class="card-title">S'inscririre</h5>
-        <div class="form-floating mb-3">
-          <input type="text" class="form-control" placeholder="Username">
-          <label>username</label>
+  <div class="card text-center mx-auto shadow" style="width: 18rem;">
+    <div class="card-body">
+      <h5 class="card-title">S'inscrire</h5>
+      <div class="alert alert-success" *ngIf="errorMsg">
+        {{errorMsg}}
+      </div>
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" name="username" placeholder="Username" [(ngModel)] = "gestionnaire.username">
+        <label>username</label>
+      </div>
+      <div class="form-floating mb-3">
+          <input type="email" class="form-control" name="email" placeholder="E-mail" [(ngModel)] = "gestionnaire.email">
+          <label>Email address</label>
         </div>
-        <div class="form-floating mb-3">
-            <input type="email" class="form-control" placeholder="E-mail">
-            <label>Email address</label>
-          </div>
-        <div class="form-floating mb-3">
-          <input type="password" class="form-control" placeholder="Password">
-          <label>Password</label>
-        </div>
-        <div class="form-floating mb-3">
-          <input type="date" class="form-control" placeholder="E-mail">
-          <label>Date naissance</label>
-        </div>
-        <div class="mt-2 d-flex justify-content-between">
-          <a [routerLink]="['/login']" class="btn btn-link">Se connecter</a>
-          <button type="button" class="btn btn-primary">S'inscrire</button>
-        </div>
+      <div class="form-floating mb-3">
+        <input type="password" class="form-control" name="password" placeholder="Password" [(ngModel)] = "gestionnaire.password">
+        <label>Password</label>
+      </div>
+      <div class="form-floating mb-3">
+        <select class="form-select" [(ngModel)] = "gestionnaire.roles">
+          <option [ngValue]="gestionnaire.roles">Choisir un role</option>
+          <option [ngValue]="[role]" *ngFor="let role of roles">{{role.role}}</option>
+        </select>
+      </div>
+      <div class="mt-2 d-flex justify-content-between">
+        <button type="button" (click)="addUser()" class="btn btn-primary">Ajouter Utilisateur</button>
       </div>
     </div>
   </div>
+</div>
