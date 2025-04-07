@@ -22,7 +22,7 @@ export class DeleteRoleComponent {
   ) { }
 
   delete() {
-    if (this.id === undefined) {
+    if (!this.id) {
       this.errorMessage = "Aucun ID n'a été donnée, Veuillez fournir un ID";
       return;
     }

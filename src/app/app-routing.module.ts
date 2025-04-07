@@ -10,7 +10,7 @@ import { PageSupprimerIncidentComponent } from './pages/incidents/page-supprimer
 import { PageNonAffecteComponent } from './pages/incidents/page-non-affecte/page-non-affecte.component';
 import { PageAllUtilisateursComponent } from './pages/utilisateurs/page-all-utilisateurs/page-all-utilisateurs.component';
 import { PageUpdateUtilisateurComponent } from './pages/utilisateurs/page-update-utilisateur/page-update-utilisateur.component';
-import { PageSupprimerUtilisateurComponent } from './pages/utilisateurs/page-supprimer-utilisateur/page-supprimer-utilisateur.component';
+import { PageDeleteUtilisateurComponent } from './pages/utilisateurs/page-delete-utilisateur/page-delete-utilisateur.component';
 import { ApplicationGuardService } from './services/guard/application-guard.service';
 import { PageRoleComponent } from './pages/roles/page-role/page-role.component';
 import { PageAddRoleComponent } from './pages/roles/page-add-role/page-add-role.component';
@@ -62,7 +62,7 @@ const routes: Routes = [
       },
       {
         path: 'deleteUser',
-        component: PageSupprimerUtilisateurComponent
+        component: PageDeleteUtilisateurComponent
       },
       {
         path: 'displayAllRoles',

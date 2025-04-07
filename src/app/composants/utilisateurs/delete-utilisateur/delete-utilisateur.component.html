@@ -15,7 +15,7 @@
           <label for="ID" class="col-form-label">ID:</label>
         </div>
         <div class="col-auto">
-          <input type="text" id="ID" class="form-control" [(ngModel)]="id">
+          <input type="text" id="ID" name="id" class="form-control" [(ngModel)] = "id">
         </div>
         <div class="col-auto">
             <button type="button" class="btn btn-outline-danger" (click)="delete()">Supprimer</button>

@@ -8,18 +8,18 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class ServiceClientService {
-
+  
   private readonly apiServiceUrl = environment.gestionCasApi;
-
+  
   constructor(
     private http: HttpClient
   ) { }
-
+  
   getClients(): Observable<Client[]> {
     return this.http.get<Client[]>(`${this.apiServiceUrl}/client/all`);
   }
-
-  deleteClient(ClientId: string): Observable<void> {
+  
+  deleteClient(ClientId?: number): Observable<void> {
     return this.http.delete<void>(`${this.apiServiceUrl}/client/delete/${ClientId}`);
   }
 

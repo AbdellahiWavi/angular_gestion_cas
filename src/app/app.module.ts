@@ -21,10 +21,10 @@ import { PageSupprimerIncidentComponent } from './pages/incidents/page-supprimer
 import { PageNonAffecteComponent } from './pages/incidents/page-non-affecte/page-non-affecte.component';
 import { PageAllUtilisateursComponent } from './pages/utilisateurs/page-all-utilisateurs/page-all-utilisateurs.component';
 import { PageUpdateUtilisateurComponent } from './pages/utilisateurs/page-update-utilisateur/page-update-utilisateur.component';
-import { PageSupprimerUtilisateurComponent } from './pages/utilisateurs/page-supprimer-utilisateur/page-supprimer-utilisateur.component';
+import { PageDeleteUtilisateurComponent } from './pages/utilisateurs/page-delete-utilisateur/page-delete-utilisateur.component';
 import { AllUtilisateursComponent } from './composants/utilisateurs/all-utilisateurs/all-utilisateurs.component';
 import { UpdateUtilisateurComponent } from './composants/utilisateurs/update-utilisateur/update-utilisateur.component';
-import { SupprimerUtilisateurComponent } from './composants/utilisateurs/supprimer-utilisateur/supprimer-utilisateur.component'
+import { DeleteUtilisateurComponent } from './composants/utilisateurs/delete-utilisateur/delete-utilisateur.component'
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { PageRoleComponent } from './pages/roles/page-role/page-role.component';
@@ -60,10 +60,10 @@ import { AllClientComponent } from './composants/clients/all-client/all-client.c
     PageNonAffecteComponent,
     PageAllUtilisateursComponent,
     PageUpdateUtilisateurComponent,
-    PageSupprimerUtilisateurComponent,
+    PageDeleteUtilisateurComponent,
     AllUtilisateursComponent,
     UpdateUtilisateurComponent,
-    SupprimerUtilisateurComponent,
+    DeleteUtilisateurComponent,
     PageRoleComponent,
     AllRoleComponent,
     AddRoleComponent,

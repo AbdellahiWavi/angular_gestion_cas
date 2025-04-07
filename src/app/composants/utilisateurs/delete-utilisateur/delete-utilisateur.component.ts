@@ -4,12 +4,12 @@ import { Router } from '@angular/router';
 import { MessageService } from '../../../services/messages-service/message.service';
 
 @Component({
-  selector: 'app-supprimer-utilisateur',
+  selector: 'delete-utilisateur',
   standalone: false,
-  templateUrl: './supprimer-utilisateur.component.html',
-  styleUrl: './supprimer-utilisateur.component.css'
+  templateUrl: './delete-utilisateur.component.html',
+  styleUrl: './delete-utilisateur.component.css'
 })
-export class SupprimerUtilisateurComponent {
+export class DeleteUtilisateurComponent {
   
   title = 'Supprimer utilisateur';
   id?: number;
@@ -23,7 +23,7 @@ export class SupprimerUtilisateurComponent {
 
 
   delete(): void {
-    if (this.id === undefined) {
+    if (!this.id) {
       this.errorMessage = "Aucun ID n'a été donnée, Veuillez fournir un ID";
       return;
     }

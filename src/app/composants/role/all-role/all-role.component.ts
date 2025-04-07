@@ -19,7 +19,6 @@ export class AllRoleComponent {
   errorMessage = '';
 
   roles: Role[] = [];
-  roles1: any;
   dtoptions: Config = {};
   dtTrigger: Subject<any> = new Subject<any>();
   
@@ -36,8 +35,8 @@ export class AllRoleComponent {
   }
   
   ngOnInit(): void {
-    this.dtoptions = this.dataTableConfig.dtOptionsConfig();
     this.getRoles();
+    this.dtoptions = this.dataTableConfig.dtOptionsConfig();
   }
   
   getRoles(): void {
