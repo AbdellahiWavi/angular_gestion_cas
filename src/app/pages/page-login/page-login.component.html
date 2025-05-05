@@ -2,15 +2,15 @@
   <div class="card text-center mx-auto shadow" style="width: 18rem;">
     <div class="card-body">
       <h5 class="card-title">Login to your account</h5>
-      <div class="alert alert-danger" *ngIf="messageErreur">
-        {{ messageErreur }}
+      <div class="alert alert-danger" *ngIf="errorMsg">
+        {{ errorMsg }}
       </div>
       <div class="form-floating mb-3">
-        <input type="email" class="form-control" placeholder="E-mail" [(ngModel)] = "authenticationRequest.login">
+        <input type="email" class="form-control" name="login" placeholder="E-mail" [(ngModel)] = "authenticationRequest.login">
         <label>Email address</label>
       </div>
       <div class="form-floating">
-        <input type="password" class="form-control" placeholder="Password" [(ngModel)] = "authenticationRequest.password">
+        <input type="password" class="form-control" name="password" placeholder="Password" [(ngModel)] = "authenticationRequest.password">
         <label>Password</label>
       </div>
       <div class="mt-2 d-flex justify-content-between">

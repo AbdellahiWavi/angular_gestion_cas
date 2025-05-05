@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -7,6 +8,17 @@ import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit{
   faRightFromBracket = faRightFromBracket;
+  currentUrl = '';
+  id_destination: number | null = null;
+
+  constructor (private router: Router, private route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe(param => {
+      this.id_destination = Number(param.get('id'));
+    });
+    this.currentUrl = this.router.url;
+  }
 }

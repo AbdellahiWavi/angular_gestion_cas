@@ -1,0 +1,42 @@
+<div class="container-fluid">
+    <div class="mb-3 d-flex justify-content-between">
+        <h4>{{ title }}</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Role</li>
+            <li class="breadcrumb-item"><a class="link-primary">{{ title }}</a></li>
+        </ol>
+    </div>
+
+    <div class="row g-3 align-items-center">
+        <div class="alert alert-danger" *ngIf="errorMessage">
+            {{errorMessage}}
+        </div>
+        <div class="col-auto">
+          <label for="role" class="col-form-label">ID:</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" id="role" class="form-control" [(ngModel)]="id">
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-outline-danger" (click)="canDelete()">Supprimer</button>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="{{target}}" tabindex="-1" [attr.aria-labelledby]="labelledby" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="{{labelledby}}">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer cet role ?
+                </div>
+                <div class="modal-footer">
+                <button type="button" id="close" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" (click)="delete()">Confirmé</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

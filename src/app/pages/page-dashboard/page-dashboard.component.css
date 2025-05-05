@@ -16,10 +16,15 @@
   flex-direction: column;
   min-height: 100vh;
   min-width: 0;
-  overflow: hidden;
+  overflow: auto;
   transition: all .35s ease-in-out;
-  width: 100%;
+  width: 80%;
   background: var(--bs-gray-bg-subtle);
+  position: relative;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 250px;
 }
 
 /* Sidebar elements style */
@@ -76,6 +81,14 @@ a.sidebar-link {
 .sidebar-link[data-bs-toggle="collapse"].collapsed::after {
   transform: rotate(45deg);
   transition: all .2s ease-in-out;
+}
+
+.active a, li.sidebar-item a:hover {
+  background-color: white;
+  color: black;
+  border-radius: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .card-footer {

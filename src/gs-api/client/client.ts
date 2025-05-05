@@ -2,5 +2,6 @@ export interface Client {
     id?: number,
     username?: string,
     tel?: string,
-    password?: string
+    password?: string,
+    dateCreation: Date
 }

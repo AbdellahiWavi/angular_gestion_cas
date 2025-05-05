@@ -1,0 +1,37 @@
+<div class="container my-container">
+    <div class="mb-3 d-flex justify-content-between">
+        <h4>{{ title }}</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Type de Cas</li>
+            <li class="breadcrumb-item"><a class="link-primary">{{ title }}</a></li>
+        </ol>
+    </div>
+
+    <div class="card text-center mx-auto shadow" style="width: 18rem;">
+        <div class="card-body">
+        <h5 class="card-title">Ajouter un type de cas</h5>
+        <div class="alert alert-success" *ngIf="errorMsg">
+            {{errorMsg}}
+        </div>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" name="type" placeholder="type de degree" [(ngModel)] = "typeCas.type">
+            <label>type de cas</label>
+        </div>
+        <div class="form-floating mb-3">
+            <select 
+            class="form-select" 
+            name="selectOrganisme"
+            [(ngModel)]="typeCas.destination"
+            >
+            <option [ngValue]="typeCas.destination">Choisir un organisme</option>
+            @for (destination of orgExternes; track destination.idDestination) {
+                <option [ngValue]="destination">{{destination.name}}</option>           
+            }
+            </select>
+        </div>
+        <div class="mt-2 d-flex justify-content-between">
+            <button type="button" (click)="addTypeCas()" class="btn btn-primary">Ajouter</button>
+        </div>
+        </div>
+    </div>
+</div>

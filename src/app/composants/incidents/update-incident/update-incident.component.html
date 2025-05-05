@@ -2,25 +2,34 @@
     <div class="mb-3 d-flex justify-content-between">
         <h4>{{ title }}</h4>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Incidents</a></li>
+            <li class="breadcrumb-item"><a [routerLink]="['/displayAllIncident']">Incidents</a></li>
             <li class="breadcrumb-item active">{{ title }}</li>
         </ol>
     </div>
 
     <div class="row g-3 align-items-center">
         <div class="col-auto">
-          <label for="status" class="col-form-label">STATUS:</label>
+          <label class="col-form-label">STATUS: </label>
         </div>
         <div class="col-auto">
-          <select name="status" class="form-select">
-            <option value="traiter">traiter</option>
-            <option value="annule">annulle</option>
+          <select 
+            name="status" 
+            class="form-select"
+            [(ngModel)]="newStatus"
+            >
+            @for (status of statusOptions; track $index) {
+                <option 
+                    [ngValue]="status.label"
+                    >
+                    {{status.label}}
+                </option>  
+            }
           </select>
         </div>
         <div class="col-auto">
-            <button type="button" class="btn  btn-outline-primary">Modifier</button>
+            <button type="button" (click)="updateStatus()" class="btn btn-outline-primary">Modifier</button>
         </div>
-        </div>
+    </div>
 </div>
 
 

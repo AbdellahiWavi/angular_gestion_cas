@@ -1,6 +1,5 @@
 <li class="sidebar-item" *ngFor="let menu of menuProperties">
-    
-    <a (click)="navigate(menu.url)" class="sidebar-link" data-bs-toggle = "collapse" [attr.data-bs-target]="'#' + menu.id" [attr.aria-controls]="menu.titre"
+    <a class="sidebar-link" data-bs-toggle = "collapse" [attr.data-bs-target]="'#' + menu.id" [attr.aria-controls]="menu.titre"
         aria-expanded="false">
         <fa-icon [icon]="menu.icon" class="pe-2"></fa-icon>&nbsp;
         {{menu.titre}}
@@ -13,4 +12,3 @@
         </div>
     </div>
 </li>
-

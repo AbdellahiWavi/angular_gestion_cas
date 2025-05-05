@@ -18,7 +18,7 @@ export class AllClientComponent {
   dtoptions: Config = {};
   dtTrigger: Subject<any> = new Subject<any>();
   
-  successMessage = '';
+  successMessage: string | string[] | null = '';
   errorMessage = '';
 
   clients: Client[] = [];
@@ -27,15 +27,14 @@ export class AllClientComponent {
     private clientService: ServiceClientService,
     private messageService: MessageService,
     private dataTableConfig: DataTableConfiService
-  ) {
+  ) {}
+  
+  ngOnInit(): void {
     this.messageService.currentMessage.subscribe({
       next: message => {
         this.successMessage = message;
       }
     });
-  }
-  
-  ngOnInit(): void {
     this.dtoptions = this.dataTableConfig.dtOptionsConfig();
     this.getClients();
   }
@@ -44,11 +43,15 @@ export class AllClientComponent {
     this.clientService.getClients().subscribe({
       next: (response: Client[]) => {
         this.clients = response;
-        this.dtTrigger.next(0);
+        this.dtTrigger.next(null);
       },
       error: error => {
         alert(error.message);
       }
     })
+  }
+
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
   }
 }

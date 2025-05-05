@@ -21,9 +21,9 @@ export class DataTableConfiService {
       columnDefs: [
         { 
           targets: "_all", // Applique à toutes les colonnes
-          className: "dt-left" // Classe DataTables pour aligner à gauche
+          className: "dt-center" // Classe DataTables pour aligner à gauche
         }
-      ]
+      ],
     };
   }
 }

@@ -1,0 +1,25 @@
+<div class="container my-container">
+    <div class="mb-3 d-flex justify-content-between">
+        <h4>{{ title }}</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Degrees</li>
+            <li class="breadcrumb-item active"><a class="link-primary">{{ title }}</a></li>
+        </ol>
+    </div>
+
+    <div class="card text-center mx-auto shadow" style="width: 18rem;">
+        <div class="card-body">
+        <h5 class="card-title">Ajouter un degree</h5>
+        <div class="alert alert-success" *ngIf="errorMsg">
+            {{errorMsg}}
+        </div>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" name="degree" placeholder="type de degree" [(ngModel)] = "degrees.type_degree">
+            <label>type de degree</label>
+        </div>
+        <div class="mt-2 d-flex justify-content-between">
+            <button type="button" (click)="addDegree()" class="btn btn-primary">Ajouter</button>
+        </div>
+        </div>
+    </div>
+</div>

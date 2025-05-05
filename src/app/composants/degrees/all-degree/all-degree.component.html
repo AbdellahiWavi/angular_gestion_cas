@@ -1,0 +1,49 @@
+<div class="container-fluid">
+    <div class="mb-3 d-flex justify-content-between">
+        <h4>{{ title }}</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Degrees</li>
+            <li class="breadcrumb-item"><a class="link-primary">{{ title }}</a></li>
+        </ol>
+    </div>
+    <div class="alert alert-success" *ngIf="successMessage">
+        {{successMessage}}
+    </div>
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">{{ title }}</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped"
+            datatable
+            [dtOptions]="dtoptions"
+            [dtTrigger]="dtTrigger"
+            width="100%"
+            cellspacing="0"
+            >
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>type de degree</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>ID</th>
+                        <th>type de degree</th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    <tr *ngFor="let degree of degrees">
+                        <td>{{degree.id}}</td>
+                        <td>{{degree.type_degree}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+
+</div>

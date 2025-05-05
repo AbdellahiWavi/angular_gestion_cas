@@ -2,8 +2,8 @@
     <div class="mb-3 d-flex justify-content-between">
         <h4>{{ title }}</h4>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a class="link-primary">Utilisateurs</a></li>
-            <li class="breadcrumb-item active">{{ title }}</li>
+            <li class="breadcrumb-item">Utilisateurs</li>
+            <li class="breadcrumb-item"><a class="link-primary">{{ title }}</a></li>
         </ol>
     </div>
     <div class="alert alert-success" *ngIf="successMessage">
@@ -20,22 +20,32 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>role</th>
-                        <th>profile</th>
+                        <th>Role</th>
+                        <th>Profile</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
-                <tfoot>
-                    <tr>
-                        <th>ID</th>
-                        <th>role</th>
-                        <th>profile</th>
-                    </tr>
-                </tfoot>
                 <tbody>
                     <tr *ngFor="let role of roles">
                         <td>{{role.id}}</td>
                         <td>{{role.role}}</td>
                         <td>{{role.profile}}</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-3"></div>
+                                <div class="col-3">
+                                    <a (click)="updateRole(role)">
+                                        <fa-icon [icon]="pen"
+                                            style="color: rgb(86, 239, 96); display: inline;"></fa-icon>
+                                    </a>
+                                </div>
+                                <div class="col-3">
+                                    <a (click)="canHide(role.id!)">
+                                        <fa-icon [icon]="trash" style="color: rgb(255, 72, 48);"></fa-icon>
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>

@@ -2,64 +2,90 @@
     <div class="mb-3 d-flex justify-content-between">
         <h4>{{ title }}</h4>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Utilisateurs</a></li>
-            <li class="breadcrumb-item active">{{ title }}</li>
+            <li class="breadcrumb-item">Utilisateurs</li>
+            <li class="breadcrumb-item"><a class="link-primary">{{ title }}</a></li>
         </ol>
     </div>
-    <div class="alert alert-success" *ngIf="successMsg">
+    <div class="alert alert-success" *ngIf="typeof successMsg === 'string' && successMsg">
         {{successMsg}}
+    </div>
+    <div class="alert alert-success" *ngIf="isArray(successMsg)">
+        @for (message of successMsg; track $index) {
+        {{message}}<br>
+        }
     </div>
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">{{ title }}</h6>
-    </div>
-    <div class="card-body">
-        <div class="col-auto">
-            <button type="button" class="btn btn-outline-primary" [routerLink]="['/inscrire']">Ajouter utilisateur</button>
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{{ title }}</h6>
         </div>
-        <div class="table-responsive">
-            <table class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>username</th>
-                        <th>email</th>
-                        <th>role</th>
-                        <th>Action</th>
-                        <th>password</th>
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        <th>ID</th>
-                        <th>username</th>
-                        <th>email</th>
-                        <th>role</th>
-                        <th>Action</th>
-                        <th>password</th>
-                    </tr>
-                </tfoot>
-                <tbody>
-                    <tr *ngFor="let gestionnaire of gestionnaires">
-                        <td>{{gestionnaire.id}}</td>
-                        <td>{{gestionnaire.username}}</td>
-                        <td>{{gestionnaire.email}}</td>
-                        <td>
-                            @for (role of gestionnaire.roles; track role.id) {
+        <div class="card-body">
+            <div class="col-auto">
+                <button type="button" class="btn btn-outline-primary" [routerLink]="['/inscrire']">Ajouter
+                    utilisateur</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger"
+                    width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>username</th>
+                            <th>email</th>
+                            <th>role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (gestionnaire of gestionnaires; track $index) {
+                        <tr>
+                            <td>{{gestionnaire.id}}</td>
+                            <td>{{gestionnaire.username}}</td>
+                            <td>{{gestionnaire.email}}</td>
+                            <td>
+                                @for (role of gestionnaire.roles; track role.id) {
                                 {{role.role}}
-                            }
-                        </td>
-                        <td>
-                            <div class="col-1 mb-1">
-                                <button type="button" (click)="updateRole(gestionnaire)" class="btn btn-outline-primary">Modifier_Role</button>
-                            </div>
-                        </td>
-                        <td>{{gestionnaire.password}}</td>
-                    </tr>
-                </tbody>
-            </table>
+                                }
+                            </td>
+                            <td>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <a (click)="updateRole(gestionnaire)">
+                                            <fa-icon [icon]="pen"
+                                                style="color: rgb(86, 239, 96); display: inline;"></fa-icon>
+                                        </a>
+                                    </div>
+                                    <div class="col-4">
+                                        <a (click)="canHide(gestionnaire.id!)">
+                                            <fa-icon [icon]="trash" style="color: rgb(255, 72, 48);"></fa-icon>
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div><!-- Modal -->
+            <div class="modal fade" id="{{target}}" tabindex="-1" [attr.aria-labelledby]="labelledby"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="{{labelledby}}">Confirmation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Êtes-vous sûr de vouloir supprimer cet utilisateur ?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="close" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Annuler</button>
+                            <button type="button" class="btn btn-danger" (click)="deleteUser()">Confirmé</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
     </div>
 </div>

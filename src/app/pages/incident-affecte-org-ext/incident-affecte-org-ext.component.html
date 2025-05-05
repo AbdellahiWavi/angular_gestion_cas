@@ -1,0 +1,90 @@
+<div class="container-fluid">
+    <app-header></app-header>
+    <div style="height: 20px;"></div>
+    <div class="d-flex bd-highlight mb-3">
+        <div class="p-2 bd-highlight">
+            <img [src]="orgExt.image" alt="" >    
+        </div>
+        <div class="pt-4 bd-highlight mx-auto">    
+            <h4>{{ title }}</h4>
+        </div>
+    </div>
+    <div class="alert alert-success" *ngIf="typeof successMsg === 'string' && successMsg">
+        {{successMsg}}
+    </div>
+    <!-- DataTales -->
+    <div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">{{ title }}</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ID Client</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                        <th>Date de creation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let incident of incidents; let i = index">
+                    @if (incident.typeCas?.destination?.idDestination === orgExt.idDestination) {
+                        <td>
+                            {{incident.id}}
+                        </td>
+                        <td>{{incident.client?.id}}</td>
+                        <td>{{incident.status}}</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-4">
+                                    <a [routerLink]="['/updateIncident']"
+                                        [queryParams]="{ id: incident.id, status: incident.status }">
+                                        <fa-icon [icon]="pen"
+                                            style="color: rgb(86, 239, 96); display: inline;"></fa-icon>
+                                    </a>
+                                </div>
+                                <div class="col-4">
+                                    <a [routerLink]="['/detailsIncident']" [queryParams]="{ id: incident.id }">
+                                        <fa-icon [icon]="eye" style="color: rgb(44, 44, 245);"></fa-icon>
+                                    </a>
+                                </div>
+                                <div class="col-4">
+                                    <a (click)="canHide(incident.id!)">
+                                        <fa-icon [icon]="trash" style="color: rgb(255, 72, 48);"></fa-icon>
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{incident.dateCreation}}</td>
+                        <td>{{incident.dernierChEta}}</td>
+                    }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="{{target}}" tabindex="-1" [attr.aria-labelledby]="labelledby"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="{{labelledby}}">Confirmation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Êtes-vous sûr de vouloir supprimer cet Incident ?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="close" class="btn btn-secondary"
+                            data-bs-dismiss="modal">Annuler</button>
+                        <button type="button" class="btn btn-danger" (click)="hideIncident()">Confirmé</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>

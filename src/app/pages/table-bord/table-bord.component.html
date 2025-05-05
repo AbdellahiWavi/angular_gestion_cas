@@ -1,11 +1,16 @@
-
 <div class="container-fluid">
     <div class="mb-3 d-flex justify-content-between">
         <h4>Tableau de board</h4>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Accueil</a></li>
-            <li class="breadcrumb-item active">Tableau de bord</li>
+            <li class="breadcrumb-item">Accueil</li>
+            <li class="breadcrumb-item active"><a class="link-primary">{{title}}</a></li>
         </ol>
+    </div>
+    
+    <div class="alert alert-info" *ngIf="singalerIncidentOrClientToDay">
+        @for (message of singalerIncidentOrClientToDay; track $index) {
+            {{message}} <br>
+        }
     </div>
     <!-- Content Row -->
     <div class="row">
@@ -14,8 +19,8 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-gray-300 mb-1">2</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Utilisateurs</div>
+                            <div class="text-xs font-weight-bold text-primary text-gray-300 mb-1">{{nbClient}}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Clients</div>
                         </div>
                         <div class="col-auto">
                             <fa-icon [icon]="faUserPlus" class="fa-2x" style="color: #4e73df;"></fa-icon>
@@ -29,7 +34,7 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-gray-300 mb-1">0</div>
+                            <div class="text-xs font-weight-bold text-info text-gray-300 mb-1">{{nbClientToDay}}</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">Inscription d'aujourd'hui</div>
                         </div>
                         <div class="col-auto">
@@ -44,7 +49,7 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-gray-300 mb-1">4</div>
+                            <div class="text-xs font-weight-bold text-success text-gray-300 mb-1">{{nbIncident}}</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">Incidents Signaler</div>
                         </div>
                         <div class="col-auto">
@@ -59,7 +64,7 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-gray-300 mb-1">0</div>
+                            <div class="text-xs font-weight-bold text-warning text-gray-300 mb-1">{{nbIncidentToDay}}</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">Signaler Aujourd'hui</div>
                         </div>
                         <div class="col-auto">
@@ -74,7 +79,7 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-danger text-gray-300 mb-1">1</div>
+                            <div class="text-xs font-weight-bold text-danger text-gray-300 mb-1">{{nbIncidentNonAffecte}}</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">Incidents Non Affecter</div>
                         </div>
                         <div class="col-auto">

@@ -2,24 +2,25 @@
   <div class="mb-3 d-flex justify-content-between">
       <h4>{{ title }}</h4>
       <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a class="link-pirmary">Accueil</a></li>
-          <li class="breadcrumb-item active">{{ title }}</li>
+          <li class="breadcrumb-item">Accueil</li>
+          <li class="breadcrumb-item"><a class="link-pirmary">{{ title }}</a></li>
       </ol>
   </div>
 
   <div class="row g-3 align-items-center">
     <div class="col-auto">
-      <label class="col-form-label">Rôle : </label>
+      <label class="col-form-label">Rôle et profile: </label>
     </div>
     @for (currentRole of gestionnaire.roles; track $index + '_' + currentRole.id; let i = $index) {
       <div class="col-auto">
         <select 
-          class="form-select mb-1" 
+          class="form-select" 
+          name="selectRole"
           [(ngModel)]="gestionnaire.roles[i]"
           [compareWith]="compareRoles"
         >
           @for (role of roles; track role.id) {
-            <option [ngValue]="role">{{role.role}}</option>
+            <option [ngValue]="role">{{role.role}}_{{role.profile}}</option>           
           }
         </select>
       </div>

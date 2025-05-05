@@ -1,16 +1,30 @@
-<nav class="navbar navbar-expand px-3 border-bottom mb-4 shadow" style="background-color: #fff;">
-    <button class="btn" id="sidebar-toggle" type="button">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <a href="#" class="link-secondary ms-4 lh-base">Accueil</a>
-    <div class="navbar-collapse navbar">
-        <ul class="navbar-nav">
-            <fa-icon [icon]="faRightFromBracket" class="pe-1" style="color: gray;"></fa-icon>
-            <li class="nav-item">
-                <a href="#" class="link-secondary" style="font-size: .8rem;">
-                    Déconnecter
-                </a>
-            </li>
-        </ul>
-    </div>
-</nav>
+@if (this.currentUrl !== `/orgExterne?id=${id_destination}` ) {
+    <nav class="navbar navbar-expand px-3 border-bottom shadow" style="background-color: #fff;">
+        <button class="btn" id="sidebar-toggle" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="link-secondary ms-4 lh-base" routerLink="/tableBord">Accueil</a>
+        <div class="navbar-collapse navbar">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a routerLink="/logout" class="link-secondary" style="font-size: .8rem;">
+                        <fa-icon [icon]="faRightFromBracket"  style="color: gray;"></fa-icon>
+                        Déconnecter
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+}@else {
+    <nav class="navbar navbar-expand px-3 border-bottom shadow bg-primary bg-gradient">
+        <div class="navbar-collapse navbar">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a routerLink="/logout" class="link-secondary text-white" style="font-size: .8rem;">
+                        <fa-icon [icon]="faRightFromBracket"></fa-icon>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+}

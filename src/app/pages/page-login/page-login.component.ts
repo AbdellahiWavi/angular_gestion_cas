@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ServiceLoginService } from '../../services/user/login/service-login.service';
 import { AuthenticationRequest } from '../../services/user/authenticationRequest';
 import { Router } from '@angular/router';
+import { MessageService } from '../../services/messages-service/message.service';
 
 @Component({
   selector: 'app-page-login',
@@ -11,22 +12,36 @@ import { Router } from '@angular/router';
 })
 export class PageLoginComponent {
 
-  messageErreur = '';
+  errorMsg = '';
   authenticationRequest: AuthenticationRequest = {};
   
   constructor (
     private loginService: ServiceLoginService,
-    private router: Router
+    private router: Router,
+    private messageService: MessageService
   ) { }
+
+  ngOnInit(): void {
+    this.messageService.currentMessage.subscribe({
+      next: message => {
+        if (typeof message === 'string') {
+          this.errorMsg = message;
+        }
+      }
+    });
+  }
 
   login() {
     this.loginService.login(this.authenticationRequest).subscribe({
       next: (data) => {
         this.loginService.setConnectedUser(data);
-        this.router.navigate(['table_bord']);
+        this.router.navigate(['tableBord']);
       },
-      error: () => {
-        this.messageErreur = "Login et / ou mot de passe incorrecte";
+      error: (error) => {
+        this.errorMsg = "Login et / ou mot de passe incorrecte";
+        if (error.error.error === 'Erreur interne') {
+          this.errorMsg = error.error.message;
+        }
       }
     });
   }

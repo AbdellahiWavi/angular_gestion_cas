@@ -1,92 +1,96 @@
 <div class="container-fluid">
     <div class="mb-3 d-flex justify-content-between">
-        <h4>{{ subTitle }}</h4>
+        <h4>{{ title }}</h4>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Incidents</a></li>
-            <li class="breadcrumb-item active">{{ subTitle }}</li>
+            <li class="breadcrumb-item">Incidents</li>
+            <li class="breadcrumb-item"><a class="link-primary">{{ title }}</a></li>
         </ol>
     </div>
-    <!-- DataTales Example -->
-    <div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">{{ subTitle }}</h6>
+    <div class="alert alert-success" *ngIf="typeof successMsg === 'string' && successMsg">
+        {{successMsg}}
     </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-striped" datatable [dtOptions]="dtoptions" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                    </tr>
-                </tfoot>
-                <tbody>
-                    <tr>
-                        <td>Tiger Nixon</td>
-                        <td>System Architect</td>
-                        <td>Edinburgh</td>
-                        <td>61</td>
-                        <td>2011/04/25</td>
-                        <td>$320,800</td>
-                    </tr>
-                    <tr>
-                        <td>Garrett Winters</td>
-                        <td>Accountant</td>
-                        <td>Tokyo</td>
-                        <td>63</td>
-                        <td>2011/07/25</td>
-                        <td>$170,750</td>
-                    </tr>
-                    <tr>
-                        <td>Ashton Cox</td>
-                        <td>Junior Technical Author</td>
-                        <td>San Francisco</td>
-                        <td>66</td>
-                        <td>2009/01/12</td>
-                        <td>$86,000</td>
-                    </tr>
-                    <tr>
-                        <td>Cedric Kelly</td>
-                        <td>Senior Javascript Developer</td>
-                        <td>Edinburgh</td>
-                        <td>22</td>
-                        <td>2012/03/29</td>
-                        <td>$433,060</td>
-                    </tr>
-                    <tr>
-                        <td>Airi Satou</td>
-                        <td>Accountant</td>
-                        <td>Tokyo</td>
-                        <td>33</td>
-                        <td>2008/11/28</td>
-                        <td>$162,700</td>
-                    </tr>
-                    <tr>
-                        <td>Brielle Williamson</td>
-                        <td>Integration Specialist</td>
-                        <td>New York</td>
-                        <td>61</td>
-                        <td>2012/12/02</td>
-                        <td>$372,000</td>
-                    </tr>
-                </tbody>
-            </table>
+    <div class="alert alert-success" *ngIf="isArray(successMsg)">
+        @for (message of successMsg; track $index) {
+        {{message}}<br>
+        }
+    </div>
+    <!-- DataTales -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{{ title }}</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger"
+                    width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ID Client</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                            <th>Date</th>
+                            <th>Dernier changement d'etat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let incident of incidents; let i = index">
+                            <td>
+                                {{incident.id}}
+                            </td>
+                            <td>{{incident.client?.id}}</td>
+                            <td>
+                                <div style="background-color: rgb(203, 247, 203);border-radius: 5px;">
+                                    {{incident.status}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <a [routerLink]="['/updateIncident']"
+                                            [queryParams]="{ id: incident.id, status: incident.status }">
+                                            <fa-icon [icon]="pen"
+                                                style="color: rgb(86, 239, 96); display: inline;"></fa-icon>
+                                        </a>
+                                    </div>
+                                    <div class="col-4">
+                                        <a [routerLink]="['/detailsIncident']" [queryParams]="{ id: incident.id }">
+                                            <fa-icon [icon]="eye" style="color: rgb(44, 44, 245);"></fa-icon>
+                                        </a>
+                                    </div>
+                                    <div class="col-4">
+                                        <a (click)="canHide(incident.id!)">
+                                            <fa-icon [icon]="trash" style="color: rgb(255, 72, 48);"></fa-icon>
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{incident.dateCreation}}</td>
+                            <td>{{incident.dernierChEta}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="{{target}}" tabindex="-1" [attr.aria-labelledby]="labelledby"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="{{labelledby}}">Confirmation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Êtes-vous sûr de vouloir supprimer cet Incident ?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="close" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Annuler</button>
+                            <button type="button" class="btn btn-danger" (click)="hideIncident()">Confirmé</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    </div>
-
 </div>

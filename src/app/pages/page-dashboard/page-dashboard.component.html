@@ -1,18 +1,17 @@
 <div class="wrapper">
     <aside id="sidebar" class=" bg-primary bg-gradient shadow">
-        
-         <div class="h-100">
+        <div class="h-100">
             <div class="sidebar-logo">
-                <img src="assets/image/profile.jpg">
-                <h4>GESTIONNAIRE</h4>
+                <img src="assets/images/author.jpg">
+                <h4>LISAMA</h4>
             </div>
             <ul class="sidebar-nav shadow">
                 <div class="input-group mx-auto mb-3 shadow" style="width: 85%!important;">
                     <input type="text" class="form-control bg-primary rounded-1 just-sidebar" placeholder="Search" aria-label="Username" aria-describedby="basic-addon1">
                     <span class="input-group-text rounded-1 bg-primary just-sidebar" id="basic-addon1"><fa-icon [icon]="faMagnifyingGlass"></fa-icon></span>
                 </div>
-                <li class="sidebar-item">
-                    <a href="/table_bord" class="sidebar-link">
+                <li class="sidebar-item" [class.active]="currentUrl === '/tableBord'">
+                    <a href="/tableBord" class="sidebar-link">
                         <fa-icon [icon]="faHouse" class="pe-2"></fa-icon>
                         Tableau de bord
                     </a>
@@ -23,6 +22,7 @@
     </aside>
     <div class="main">
         <app-header></app-header>
+        <app-loader></app-loader>
         <router-outlet />
     </div>
 </div>
