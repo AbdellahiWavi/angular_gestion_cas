@@ -4,7 +4,7 @@ export interface Gestionnaire {
     username?: string,
     email?: string,
     password?: string,
-    roles: [
+    roles?: [
         {
             id?: number,
             role?: string,

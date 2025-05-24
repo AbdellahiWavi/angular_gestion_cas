@@ -31,7 +31,8 @@ export class ServiceIncidentService {
     return this.http.delete<void>(`${(this.apiServiceUrl)}/incident/delete/${IncidentId}`);
   }
 
-  updateIsActive(incidentId: number): Observable<Incident> {
-    return this.http.get<Incident>(`${(this.apiServiceUrl)}/incident/isActive/${incidentId}`);
+  // TODO modifier cet endpoint pour retourner un void au lieu de incident et aussi pour toutes les approches
+  updateIsActive(incidentId: number): Observable<void> {
+    return this.http.get<void>(`${(this.apiServiceUrl)}/incident/isActive/${incidentId}`);
   }
 }

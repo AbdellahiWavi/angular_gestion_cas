@@ -28,9 +28,9 @@
                             <th>ID</th>
                             <th>ID Client</th>
                             <th>Statut</th>
-                            <th>Actions</th>
                             <th>Date</th>
-                            <th>Dernier changement d'etat</th>
+                            <th>Dernier changement de status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,6 +44,8 @@
                                     {{incident.status}}
                                 </div>
                             </td>
+                            <td>{{incident.dateCreation}}</td>
+                            <td>{{incident.dernierChEta}}</td>
                             <td>
                                 <div class="row">
                                     <div class="col-4">
@@ -65,8 +67,6 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>{{incident.dateCreation}}</td>
-                            <td>{{incident.dernierChEta}}</td>
                         </tr>
                     </tbody>
                 </table>

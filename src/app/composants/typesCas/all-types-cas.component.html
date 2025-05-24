@@ -1,0 +1,111 @@
+<div class="container-fluid">
+    <div class="mb-3 d-flex justify-content-between">
+        <h4>{{ title }}</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Type Cas</li>
+            <li class="breadcrumb-item"><a class="link-primary">{{ title }}</a></li>
+        </ol>
+    </div>
+    <div class="alert alert-success" *ngIf="successMessage">
+        {{successMessage}}
+    </div>
+    <!-- DataTales type de cas -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{{ title }}</h6>
+        </div>
+        <div class="card-body">
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addTypeModal">
+                Ajouter
+            </button>
+            <div class="table-responsive">
+                <table class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger"
+                    width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>type de cas</th>
+                            <th>organisme externe</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let typeCas of typesCas">
+                            <td>{{typeCas.id_cas}}</td>
+                            <td>{{typeCas.type}}</td>
+                            <td>
+                                {{typeCas.destination.name}}
+                            </td>
+                            <td>
+                                <div class="row">
+                                    <div class="col-4"></div>
+                                    <div class="col-4">
+                                        <a (click)="canHide(typeCas.id_cas!, 'hideOrganisme')">
+                                            <fa-icon [icon]="trash" style="color: rgb(255, 72, 48);"></fa-icon>
+                                        </a>
+                                    </div>
+                                    <div class="col-4"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Add type Modal -->
+            <div class="modal fade" id="addTypeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="addTypeModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="addTypeModalLabel">Ajouter un type de cas</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-danger" *ngIf="errorMessage">
+                                {{errorMessage}}
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="type" placeholder="type de degree"
+                                    [(ngModel)]="typeCas.type">
+                                <label>type de cas</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <select class="form-select" name="selectOrganisme" [(ngModel)]="typeCas.destination">
+                                    <option [ngValue]="typeCas.destination">Choisir un organisme</option>
+                                    @for (destination of orgExternes; track destination.idDestination) {
+                                    <option [ngValue]="destination">{{destination.name}}</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="add-close" class="btn btn-secondary" data-bs-dismiss="modal"
+                                (click)="resetForm()">Annuler</button>
+                            <button type="button" class="btn btn-primary" (click)="addTypeCas()">Ajouter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Delete type Modal -->
+            <div class="modal fade" id="hideOrganisme" tabindex="-1" aria-labelledby= "hideOrganismeLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="hideOrganismeLabel">Confirmation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Êtes-vous sûr de vouloir désactiver ce type de cas ?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="close" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Annuler</button>
+                            <button type="button" class="btn btn-danger" (click)="hideCas()">Confirmé</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

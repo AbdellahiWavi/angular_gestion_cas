@@ -36,124 +36,82 @@ export class MenuComponent {
     },
     {
       id: '2',
+      titre: 'Degrees',
+      icon: faTriangleExclamation,
+      sousMenu: [
+        {
+          id: '21',
+          titre: 'Tableau des degrees',
+          icon: '',
+          url: '/displayAllDegrees'
+        }
+      ]
+    },
+    {
+      id: '3',
+      titre: 'Organisme Externe',
+      icon: faSquareArrowUpRight,
+      sousMenu: [
+        {
+          id: '31',
+          titre: 'Tableau des organismes externes',
+          icon: '',
+          url: '/displayAllOrgExternes'
+        }
+      ]
+    },
+    {
+      id: '4',
+      titre: 'Type Cas',
+      icon: faClipboardList,
+      sousMenu: [
+        {
+          id: '41',
+          titre: 'Tableau des typesCas',
+          icon: '',
+          url: '/displayAllTypesCas'
+        }
+      ]
+    },
+    {
+      id: '5',
+      titre: 'Roles',
+      icon: faGenderless,
+      sousMenu: [
+        {
+          id: '51',
+          titre: 'Tableau des roles',
+          icon: '',
+          url: '/displayAllRoles'
+        }
+      ]
+    },
+    {
+      id: '6',
+      titre: 'Clients',
+      icon: faUser,
+      sousMenu: [
+        {
+          id: '61',
+          titre: 'Tableau des clients',
+          icon: '',
+          url: '/displayAllClients'
+        }
+      ]
+    },
+    {
+      id: '7',
       titre: 'Utilisateurs et roles',
       icon: faUser,
       sousMenu: [
         {
-          id: '21',
+          id: '71',
           titre: 'Tableau des utilisateurs',
           icon: '',
           url: '/displayAllUser'
         }
       ]
     },
-    {
-      id: '3',
-      titre: 'Roles',
-      icon: faGenderless,
-      sousMenu: [
-        {
-          id: '31',
-          titre: 'Tableau des roles',
-          icon: '',
-          url: '/displayAllRoles'
-        },
-        {
-          id: '32',
-          titre: 'Ajouter de role',
-          icon: '',
-          url: '/addRole'
-        }
-      ]
-    },
-    {
-      id: '4',
-      titre: 'Clients',
-      icon: faUser,
-      sousMenu: [
-        {
-          id: '41',
-          titre: 'Tableau des clients',
-          icon: '',
-          url: '/displayAllClients'
-        },
-        {
-          id: '42',
-          titre: 'Supprimer client',
-          icon: '',
-          url: '/deleteClient'
-        }
-      ]
-    },
-    {
-      id: '5',
-      titre: 'Degrees',
-      icon: faTriangleExclamation,
-      sousMenu: [
-        {
-          id: '51',
-          titre: 'Tableau des degrees',
-          icon: '',
-          url: '/displayAllDegrees'
-        },
-        {
-          id: '52',
-          titre: 'Ajouter degree',
-          icon: '',
-          url: '/addDegree'
-        }
-      ]
-    },
-    {
-      id: '6',
-      titre: 'Organisme Externe',
-      icon: faSquareArrowUpRight,
-      sousMenu: [
-        {
-          id: '61',
-          titre: 'Tableau des organismes externes',
-          icon: '',
-          url: '/displayAllOrgExternes'
-        },
-        {
-          id: '62',
-          titre: 'Supprimer organisme externe',
-          icon: '',
-          url: '/deleteOrgExterne'
-        },
-        {
-          id: '63',
-          titre: 'Ajouter organisme externe',
-          icon: '',
-          url: '/addOrgExterne'
-        }
-      ]
-    },
-    {
-      id: '7',
-      titre: 'Type Cas',
-      icon: faClipboardList,
-      sousMenu: [
-        {
-          id: '71',
-          titre: 'Tableau des typesCas',
-          icon: '',
-          url: '/displayAllTypesCas'
-        },
-        {
-          id: '72',
-          titre: 'Supprimer typeCas',
-          icon: '',
-          url: '/deleteTypeCas'
-        },
-        {
-          id: '73',
-          titre: 'Ajouter typeCas',
-          icon: '',
-          url: '/addTypeCas'
-        }
-      ]
-    }
   ];
 
   constructor (private router: Router) {

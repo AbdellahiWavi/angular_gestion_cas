@@ -2,14 +2,14 @@
     <div class="mb-3 d-flex justify-content-between">
         <h4>{{ title }}</h4>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item">Incidents</li>
+            <li class="breadcrumb-item">Clients</li>
             <li class="breadcrumb-item"><a class="link-primary">{{ title }}</a></li>
         </ol>
     </div>
-    <div class="alert alert-success" *ngIf="typeof successMsg === 'string' && successMsg">
-        {{successMsg}}
+    <div class="alert alert-success" *ngIf="successMessage">
+        {{successMessage}}
     </div>
-    <!-- DataTales -->
+    <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">{{ title }}</h6>
@@ -21,41 +21,25 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>ID Client</th>
-                            <th>Statut</th>
-                            <th>Date</th>
-                            <th>Dernier changement d'etat</th>
-                            <th>Actions</th>
+                            <th>nom</th>
+                            <th>numéro telephone</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let incident of incidents">
-                            <td>
-                                {{incident.id}}
-                            </td>
-                            <td>{{incident.client?.id}}</td>
-                            <td>{{incident.status}} </td>
-                            <td>{{incident.dateCreation}}</td>
-                            <td>{{incident.dernierChEta}}</td>
+                        <tr *ngFor="let client of clients">
+                            <td>{{client.id}}</td>
+                            <td>{{client.username}}</td>
+                            <td>{{client.tel}}</td>
                             <td>
                                 <div class="row">
+                                    <div class="col-4"></div>
                                     <div class="col-4">
-                                        <a [routerLink]="['/updateIncident']"
-                                            [queryParams]="{ id: incident.id, status: incident.status }">
-                                            <fa-icon [icon]="pen"
-                                                style="color: rgb(86, 239, 96); display: inline;"></fa-icon>
-                                        </a>
-                                    </div>
-                                    <div class="col-4">
-                                        <a [routerLink]="['/detailsIncident']" [queryParams]="{ id: incident.id }">
-                                            <fa-icon [icon]="eye" style="color: rgb(44, 44, 245);"></fa-icon>
-                                        </a>
-                                    </div>
-                                    <div class="col-4">
-                                        <a (click)="canHide(incident.id!)">
+                                        <a (click)="canHide(client.id!)">
                                             <fa-icon [icon]="trash" style="color: rgb(255, 72, 48);"></fa-icon>
                                         </a>
                                     </div>
+                                    <div class="col-4"></div>
                                 </div>
                             </td>
                         </tr>
@@ -72,7 +56,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            Êtes-vous sûr de vouloir supprimer cet Incident ?
+                            Êtes-vous sûr de vouloir supprimer ce client ?
                         </div>
                         <div class="modal-footer">
                             <button type="button" id="close" class="btn btn-secondary"
@@ -84,4 +68,5 @@
             </div>
         </div>
     </div>
+
 </div>

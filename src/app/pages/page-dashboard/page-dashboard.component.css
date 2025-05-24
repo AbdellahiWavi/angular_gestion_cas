@@ -29,11 +29,33 @@
 
 /* Sidebar elements style */
 .sidebar-logo {
+  display: flex;
+  align-items: center;     /* Centre verticalement */
+  justify-content: center; /* Centre horizontalement */
+  gap: 10px;               /* Espace entre image et texte */
   padding: 1.15rem;
-  margin-bottom: 4px;
+  margin: 0 auto 20px auto;
+}
+
+.sidebar-logo img {
+  height: 45px;            /* Ajuste à ta convenance */
+  width: auto;
+  display: block;
+  border-radius: 50%;
+  border: 2px solid rgb(199, 195, 195);
 }
 
 .sidebar-logo h4 {
+  margin: 0;
+  line-height: 1;          /* Pour éviter que le texte dépasse verticalement */
+  color: #e9ecef;
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+
+/* .sidebar-logo h4 {
   display: inline-block;
   color: #e9ecef;
   font-size: 1.15rem;
@@ -47,7 +69,7 @@
   height: 45px;
   border-radius: 50%;
   margin-right: 8px;
-}
+} */
 
 .sidebar-nav {
   flex-grow: 1;

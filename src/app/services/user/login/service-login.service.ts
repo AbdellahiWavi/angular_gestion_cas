@@ -61,6 +61,7 @@ export class ServiceLoginService implements OnInit{
   }
 
   logout(): void {
+    this.messageService.setMessage("vous avez déconnecter :(!");
     localStorage.removeItem('accessToken');
   }
 

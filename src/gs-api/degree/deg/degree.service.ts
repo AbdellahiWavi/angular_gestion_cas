@@ -29,5 +29,9 @@ export class DegreeService {
   deleteDegree(degreeId?: number): Observable<void> {
     return this.http.delete<void>(`${this.gestionCasApi}/degree/delete/${degreeId}`);
   }
+
+  updateIsActive(degreeId: number): Observable<Degree> {
+    return this.http.get<Degree>(`${this.gestionCasApi}/degree/isActive/${degreeId}`);
+  }
   
 }

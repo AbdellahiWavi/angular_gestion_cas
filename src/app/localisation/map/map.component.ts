@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as L from 'leaflet';
 import { MarkerService } from '../marker.service';
@@ -24,41 +24,36 @@ L.Marker.prototype.options.icon = iconDefault;
   templateUrl: './map.component.html',
   styleUrl: './map.component.css'
 })
-export class MapComponent implements AfterViewInit, OnInit {
+export class MapComponent implements OnChanges {
 
   title = "Localisation d'incident";
 
+  private map!: L.Map | L.LayerGroup<any>;
+
+  @Input() incidentLocation!: { lat?: string | undefined; lon?: string | undefined; city?: string | undefined; } | undefined;
   lat!: number;
   lon!: number;
   city!: string;
 
-  private map!: L.Map | L.LayerGroup<any>;
-
-  constructor (
-    private route: ActivatedRoute,
-    private router: Router,
+  constructor(
     private markerService: MarkerService
-  ) {}
-  
-  ngOnInit(): void {
-    this.route.queryParamMap.subscribe( params => {
-      this.lat = Number(params.get('lat'));
-      this.lon = Number(params.get('lon'));
-      this.city = String(params.get('city'));
-  
-      if ( this.lat == 0 || this.lon == 0 ) {
-        this.router.navigate(['/displayAllIncident']);
+  ) { }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['incidentLocation'] && this.incidentLocation?.lat && this.incidentLocation?.lon) {
+      this.lat = Number(this.incidentLocation.lat);
+      this.lon = Number(this.incidentLocation.lon);
+      this.city = String(this.incidentLocation.city);
+      
+      if (this.lat !== 0 && this.lon !== 0) {
+        this.initMap();
+        this.markerService.makeCityMarker(this.map, this.lat, this.lon, this.city);
       }
-    });
+    }
   }
 
   private initMap(): void {
     this.map = this.markerService.iniMapService(this.lat, this.lon);
-  }
-  
-  ngAfterViewInit(): void {
-    this.initMap();
-    this.markerService.makeCityMarker(this.map, this.lat, this.lon, this.city);
   }
 
 }

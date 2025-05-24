@@ -1,0 +1,100 @@
+<div class="container-fluid">
+    <div class="mb-3 d-flex justify-content-between">
+        <h4>{{ title }}</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Degrees</li>
+            <li class="breadcrumb-item"><a class="link-primary">{{ title }}</a></li>
+        </ol>
+    </div>
+    <div class="alert alert-success" *ngIf="successMessage">
+        {{successMessage}}
+    </div>
+    <!-- DataTales all degrees -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{{ title }}</h6>
+        </div>
+        <div class="card-body">
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                data-bs-target="#addDegreeModal">
+                Ajouter
+            </button>
+            <div class="table-responsive">
+                <table class="table table-striped" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                    width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type de degree</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let degree of degrees">
+                            <td>{{degree.id}}</td>
+                            <td>{{degree.type_degree}}</td>
+                            <td>
+                                <div class="row">
+                                    <div class="col-4"></div>
+                                    <div class="col-4">
+                                        <a (click)="prepareDeactivate(degree.id!, 'hideDegree')">
+                                            <fa-icon [icon]="trashIcon" style="color: rgb(255, 72, 48);"></fa-icon>
+                                        </a>
+                                    </div>
+                                    <div class="col-4"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Add degree Modal -->
+            <div class="modal fade" id="addDegreeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="addDegreeModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="addDegreeModalLabel">Ajouter un degree</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-success" *ngIf="errorMessage">
+                                {{errorMessage}}
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="degree" placeholder="type de degree"
+                                    [(ngModel)]="degree.type_degree">
+                                <label>type de degree</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="add-close" class="btn btn-secondary" data-bs-dismiss="modal"
+                                (click)="resetForm()">Annuler</button>
+                            <button type="button" class="btn btn-primary" (click)="addDegree()">Ajouter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Delete degree Modal -->
+            <div class="modal fade" id="hideDegree" tabindex="-1" aria-labelledby="hideDegreeLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="hideDegreeLabel">Confirmation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Êtes-vous sûr de vouloir supprimer ce degree ?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="close" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Annuler</button>
+                            <button type="button" class="btn btn-danger" (click)="deactivateDegree()">Confirmé</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

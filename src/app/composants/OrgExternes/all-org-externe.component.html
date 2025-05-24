@@ -1,0 +1,111 @@
+<div class="container-fluid">
+    <div class="mb-3 d-flex justify-content-between">
+        <h4>{{ title }}</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Organisme Externe</li>
+            <li class="breadcrumb-item"><a class="link-primary">{{ title }}</a></li>
+        </ol>
+    </div>
+    <div class="alert alert-success" *ngIf="successMessage">
+        {{successMessage}}
+    </div>
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{{ title }}</h6>
+        </div>
+        <div class="card-body">
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                data-bs-target="#addOrganismeModal">
+                Ajouter
+            </button>
+            <div class="table-responsive">
+                <table class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger"
+                    width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>photo de profile</th>
+                            <th>type de l'organisme</th>
+                            <th>Actions</th>
+                            <th>ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let orgExterne of orgExternes">
+                            <td><img src="{{orgExterne.image}}" alt="" width="45" height="45" class="rounded-circle">
+                            </td>
+                            <td>{{orgExterne.name}}</td>
+                            <td>
+                                <div class="row">
+                                    <div class="col-4"></div>
+                                    <div class="col-4">
+                                        <a (click)="canHide(orgExterne.idDestination!, 'hideOrganisme')">
+                                            <fa-icon [icon]="trash" style="color: rgb(255, 72, 48);"></fa-icon>
+                                        </a>
+                                    </div>
+                                    <div class="col-4"></div>
+                                </div>
+                            </td>
+                            <td>{{orgExterne.idDestination}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Add organisme Modal -->
+            <div class="modal fade" id="addOrganismeModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="addOrganismeModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="addOrganismeModalLabel">Ajouter un Organisme</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-danger" *ngIf="errorMessage">
+                                {{errorMessage}}
+                            </div>
+                            <div class="mb-3 d-flex justify-content-center">
+                                <button (click)="fileInput.click()"
+                                    style="background-color: transparent; border: none;">
+                                    <img [src]="imgUrl" alt="" width="100" height="100" class="rounded-circle ">
+                                    <input hidden type="file" #fileInput (change)="onFileIput(fileInput.files)"
+                                        class="form-control" name="organisme" placeholder="type de degree">
+                                </button>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="orgExterne.name"
+                                    placeholder="type de degree" [(ngModel)]="orgExterne.name">
+                                <label>nom de l'organisme</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="add-close" class="btn btn-secondary" data-bs-dismiss="modal"
+                                (click)="resetForm()">Annuler</button>
+                            <button type="button" class="btn btn-primary" (click)="addOrgExterne()">Ajouter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Disable organisme externe Modal -->
+            <div class="modal fade" id="hideOrganisme" tabindex="-1" aria-labelledby="hideOrganismeLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="hideOrganismeLabel">Confirmation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Êtes-vous sûr de vouloir supprimer cet organisme ?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="close" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Annuler</button>
+                            <button type="button" class="btn btn-danger" (click)="hideOrg()">Confirmé</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>

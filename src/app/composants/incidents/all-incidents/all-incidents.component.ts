@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Config } from 'datatables.net';
 import { MessageService } from '../../../services/messages-service/message.service';
 import { DataTableConfiService } from '../../../services/dataTableConfig/data-table-confi.service';
@@ -13,7 +13,7 @@ import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './all-incidents.component.html',
   styleUrl: './all-incidents.component.css'
 })
-export class AllIncidentsComponent implements OnInit {
+export class AllIncidentsComponent implements OnInit, OnDestroy {
 
   title = 'Tableau des incidents';
   eye = faEye;
@@ -38,7 +38,7 @@ export class AllIncidentsComponent implements OnInit {
   ngOnInit(): void {
     this.messageService.currentMessage.subscribe(
       message => {
-        if (message)  {
+        if (message) {
           this.successMsg = message;
         }
       }
@@ -53,7 +53,7 @@ export class AllIncidentsComponent implements OnInit {
     this.incidentService.getIncidents().subscribe({
       next: (incident: Incident[]) => {
         this.incidents = incident;
-        this.incidents = this.incidentNonAnnule();
+        this.incidents = this.disableIncident();
         this.dtTrigger.next(null);
       },
       error: error => {
@@ -63,24 +63,25 @@ export class AllIncidentsComponent implements OnInit {
   }
 
   canHide(id: number): void {
-      const div = document.querySelector('.row');
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.style.display = 'none';
-      button.setAttribute('data-bs-toggle', 'modal');
-      button.setAttribute('data-bs-target', '#' + this.target);
-      div?.appendChild(button);
-      button.click();
-      this.id = id;
+    this.id = id;
+    const div = document.querySelector('.row');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.style.display = 'none';
+    button.setAttribute('data-bs-toggle', 'modal');
+    button.setAttribute('data-bs-target', '#' + this.target);
+    div?.appendChild(button);
+    button.click();
+    button.remove();
   }
 
-  
+
   hideIncident(): void {
     document.getElementById('close')?.click();
 
     this.incidentService.updateIsActive(this.id).subscribe({
       next: () => {
-        this.incidents = this.incidentNonAnnule();
+        this.incidents = this.disableIncident();
         this.successMsg = "l'incident est bien été désactiver";
         this.getIncidents();
       }, error: error => {
@@ -88,11 +89,11 @@ export class AllIncidentsComponent implements OnInit {
       }
     });
   }
-  
-  incidentNonAnnule(): Incident[] {
+
+  disableIncident(): Incident[] {
     return this.incidents.filter(incident => incident.active);
   }
-  
+
   isArray<T>(value: any): value is T[] {
     return Array.isArray(value);
   }
@@ -100,5 +101,5 @@ export class AllIncidentsComponent implements OnInit {
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
   }
-  
+
 }

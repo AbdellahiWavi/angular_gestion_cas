@@ -1,5 +1,4 @@
 <div class="container-fluid">
-
     <div class="mb-3 d-flex justify-content-between">
         <h4>{{ title }}</h4>
         <ol class="breadcrumb">
@@ -34,7 +33,9 @@
                         </div>
                         <div class="col-4">
                             <p class="text-secondary">Organisme affecté</p>
-                            <p>{{incident.typeCas?.destination?.name}}</p>
+                            <button class="btn btn-primary" [routerLink]="['/orgExterne']" [queryParams]="{'id': incident.typeCas?.destination?.idDestination}">
+                                {{incident.typeCas?.destination?.name}}
+                            </button>
                         </div>
 
                     </div>
@@ -62,9 +63,7 @@
                                 <h4>Localisation</h4>
                             </div>
                             <div class="card-body">
-                                <iframe
-                                    src="https://maps.google.com/maps?q=manhatan&t=&z=13&ie=UTF8&iwloc=&output=embed"
-                                    frameborder="0" style="border:0;" allowfullscreen></iframe>
+                                <app-map [incidentLocation]="incident.place!"></app-map>
                             </div>
                             <!-- IMAGE -->
                         </div>

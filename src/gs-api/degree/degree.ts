@@ -1,4 +1,5 @@
 export interface Degree {
     id?: number,
-    type_degree?: string
+    type_degree?: string,
+    active?: boolean
 }

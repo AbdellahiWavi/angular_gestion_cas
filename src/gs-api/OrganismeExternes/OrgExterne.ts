@@ -1,5 +1,6 @@
 export interface OrgExterne {
     idDestination?: number,
     name?: string,
-    image?: string
+    image?: string,
+    active?: boolean
 }

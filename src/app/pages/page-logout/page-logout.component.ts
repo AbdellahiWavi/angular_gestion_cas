@@ -18,7 +18,6 @@ export class PageLogoutComponent implements OnInit{
 
   ngOnInit(): void {
     this.authService.logout();
-    this.messageService.setMessage("vous avez déconnecter :(!");
     this.router.navigate(['/login']);
   }
 }

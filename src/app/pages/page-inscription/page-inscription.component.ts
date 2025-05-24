@@ -13,20 +13,16 @@ import { MessageService } from '../../services/messages-service/message.service'
   styleUrl: './page-inscription.component.css'
 })
 export class PageInscriptionComponent implements OnInit {
-  
-  errorMsg = '';
+  title = "Nouveau utilisateur";
+  errorMsg: Array<string> = [];
 
-  gestionnaire: Gestionnaire = {
-    roles: [
-      {}
-    ]
-  };
+  gestionnaire: Gestionnaire = {};
   
   roles: Role[] = [];
   
   constructor (
     private userService: GsServiceService,
-    private role: WithRoleService,
+    private roleService: WithRoleService,
     private router: Router,
     private messageService: MessageService
   ) { }
@@ -35,10 +31,8 @@ export class PageInscriptionComponent implements OnInit {
     this.getRoles();
   }
   
-  
-  
   getRoles(): void {
-    this.role.getRoles().subscribe({
+    this.roleService.getRoles().subscribe({
       next: (roles: Role[]) => {
         this.roles = roles;
       },
@@ -49,15 +43,40 @@ export class PageInscriptionComponent implements OnInit {
   }
   
   addUser(): void {
-    this.userService.addUser(this.gestionnaire).subscribe({
-      next: () => {
-        this.messageService.setMessage("L'utilisateur '" + this.gestionnaire.username + "' a bien été créer")
-        this.router.navigate(['/displayAllUser']);
-      },
-      error: () => {
-        this.errorMsg = "Il y a une erreur de création de l'utilisateur";
+    this.errorMsg = [];
+    if (this.gestionnaire.email && this.gestionnaire.password && this.gestionnaire.username && this.gestionnaire.roles) {
+      if (this.isValidEmail(this.gestionnaire.email!)) {
+        this.userService.addUser(this.gestionnaire).subscribe({
+          next: () => {
+            this.messageService.setMessage("L'utilisateur '" + this.gestionnaire.username + "' est créer avec réussir")
+            this.router.navigate(['/displayAllUser']);
+          },
+          error: () => {
+            this.errorMsg.push("Il y a une erreur de création de l'utilisateur");
+          }
+        });
+      } else {
+        this.errorMsg.push("Veuillez saisir un e-mail valide");
       }
-    })
+    } else {
+      if (!this.gestionnaire.email) {
+        this.errorMsg.push("L'email ne peut pas etre vide!");
+      }
+      if (!this.gestionnaire.password) {
+        this.errorMsg.push("Le mot de passe ne peut pas etre vide!");
+      }
+      if (!this.gestionnaire.username) {
+        this.errorMsg.push("Le nom de l'utilisateur ne peut pas etre vide!");
+      }
+      if (!this.gestionnaire.roles) {
+        this.errorMsg.push("Veuillez choisir un role!");
+      }
+    }
+  }
+
+  isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 
 }

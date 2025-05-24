@@ -3,6 +3,7 @@ import { ServiceLoginService } from '../../services/user/login/service-login.ser
 import { AuthenticationRequest } from '../../services/user/authenticationRequest';
 import { Router } from '@angular/router';
 import { MessageService } from '../../services/messages-service/message.service';
+import { error } from 'jquery';
 
 @Component({
   selector: 'app-page-login',
@@ -32,17 +33,34 @@ export class PageLoginComponent {
   }
 
   login() {
-    this.loginService.login(this.authenticationRequest).subscribe({
-      next: (data) => {
-        this.loginService.setConnectedUser(data);
-        this.router.navigate(['tableBord']);
-      },
-      error: (error) => {
-        this.errorMsg = "Login et / ou mot de passe incorrecte";
-        if (error.error.error === 'Erreur interne') {
-          this.errorMsg = error.error.message;
-        }
+    if (this.authenticationRequest.login && this.authenticationRequest.password) {
+      if (this.isValidEmail(this.authenticationRequest.login)) {
+        this.loginService.login(this.authenticationRequest).subscribe({
+          next: (data) => {
+            this.loginService.setConnectedUser(data);
+            this.router.navigate(['tableBord']);
+          },
+          error: (error) => {
+            this.errorMsg = "Login et / ou mot de passe incorrecte";
+          }
+        });
+      } else {
+        this.errorMsg = "Veuillez saisir un e-mail valide";
       }
-    });
+    } else {
+      if (!this.authenticationRequest.login && this.authenticationRequest.password) {
+        this.errorMsg = "L'e-mail ne peut pas etre vide!";
+      }
+      else if (this.authenticationRequest.login && !this.authenticationRequest.password) {
+        this.errorMsg = "Le mot de passe ne peut pas etre vide!";
+      } else {
+        this.errorMsg = "Veuillez saisir un e-mail et un mot de passe valide";
+      }
+    }
+  }
+
+  isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 }

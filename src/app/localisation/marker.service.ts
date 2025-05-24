@@ -11,12 +11,12 @@ export class MarkerService {
   iniMapService(lat: number, lon: number): L.Map {
     const map = L.map('map', {
       center: [ lat, lon ],
-      zoom: 14
+      zoom: 16
     });
     
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      minZoom: 5,
+      maxZoom: 20,
+      minZoom: 10,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
     

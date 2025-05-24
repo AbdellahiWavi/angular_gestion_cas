@@ -1,0 +1,106 @@
+<div class="container-fluid">
+    <div class="mb-3 d-flex justify-content-between">
+        <h4>{{ title }}</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">Utilisateurs</li>
+            <li class="breadcrumb-item"><a class="link-primary">{{ title }}</a></li>
+        </ol>
+    </div>
+    <div class="alert alert-success" *ngIf="successMessage">
+        {{successMessage}}
+    </div>
+    <!-- DataTales roles -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{{ title }}</h6>
+        </div>
+        <div class="card-body">
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addRoleModal">
+                Ajouter
+            </button>
+            <div class="table-responsive">
+                <table class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger"
+                    width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Role</th>
+                            <th>Profile</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let role of roles">
+                            <td>{{role.id}}</td>
+                            <td>{{role.role}}</td>
+                            <td>{{role.profile}}</td>
+                            <td>
+                                <div class="row">
+                                    <div class="col-4"></div>
+                                    <div class="col-4">
+                                        <a (click)="canHide(role.id!, 'hideRoleModal')">
+                                            <fa-icon [icon]="trash" style="color: rgb(255, 72, 48);"></fa-icon>
+                                        </a>
+                                    </div>
+                                    <div class="col-4"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Add role Modal -->
+            <div class="modal fade" id="addRoleModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="addRoleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="addRoleModalLabel">Ajouter de role et profile</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-danger" *ngIf="errorMessage">
+                                {{errorMessage}}
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="role" placeholder="Username"
+                                    [(ngModel)]= "role.role">
+                                <label>Role</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="email" class="form-control" name="profile" placeholder="E-mail"
+                                    [(ngModel)]= "role.profile">
+                                <label>Profile</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="add-close" class="btn btn-secondary"
+                                data-bs-dismiss="modal" (click)="resetForm()">Annuler</button>
+                            <button type="button" class="btn btn-primary" (click)="addRole()">Ajouter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Delete role Modal -->
+            <div class="modal fade" id="hideRoleModal" tabindex="-1" aria-labelledby="hideRoleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="hideRoleModalLabel">Confirmation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Êtes-vous sûr de vouloir supprimer ce role ?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="close" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Annuler</button>
+                            <button type="button" class="btn btn-danger" (click)="hideRole()">Confirmé</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

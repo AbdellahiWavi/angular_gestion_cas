@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Config } from 'datatables.net';
 import { Subscription, Subject } from 'rxjs';
@@ -16,7 +16,7 @@ import { MessageService } from '../../services/messages-service/message.service'
   templateUrl: './incident-affecte-org-ext.component.html',
   styleUrl: './incident-affecte-org-ext.component.css'
 })
-export class IncidentAffecteOrgExtComponent {
+export class IncidentAffecteOrgExtComponent implements OnInit {
   orgExt: OrgExterne = {};
 
   expandedRow: number | null = null;
@@ -26,15 +26,15 @@ export class IncidentAffecteOrgExtComponent {
   successMsg: string = '';
   id_destination!: number;
   id!: number;
-  target = 'hideIncident';
-  labelledby = 'hideIncidentLabel';
+  target = 'hideOrgExt';
+  labelledby = 'hideOrgExtLabel';
 
   dtoptions: Config = {};
   incidents: Incident[] = [];
   orgExts: OrgExterne[] = [];
   subscription: Subscription | undefined;
 
-  title = 'Les incidents Affecter à ' + this.orgExt.name;
+  title = "";
 
   dtTrigger: Subject<any> = new Subject<any>();
 
@@ -64,6 +64,7 @@ export class IncidentAffecteOrgExtComponent {
     this.subscription = this.orgExtService.findOrgExt(this.id_destination).subscribe({
       next: (orgExt: OrgExterne) => {
         this.orgExt = orgExt;
+        this.title = 'Les incidents Affecter à ' + orgExt.name;
       }, error: err => {
         alert(err.message);
       }
@@ -74,6 +75,7 @@ export class IncidentAffecteOrgExtComponent {
     this.incidentService.getIncidents().subscribe({
       next: (incident: Incident[]) => {
         this.incidents = incident;
+        this.incidents = this.incidentNonAnnule();
         this.dtTrigger.next(null);
       },
       error: error => {

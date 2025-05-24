@@ -30,4 +30,8 @@ export class TypeCasService {
   deleteTypeCas(typeCasId?: number): Observable<void> {
     return this.http.delete<void>(`${this.gestionCasApi}/typeCas/delete/${typeCasId}`);
   }
+
+  updateIsActive(typeCasId: number): Observable<TypeCas> {
+    return this.http.get<TypeCas>(`${this.gestionCasApi}/typeCas/isActive/${typeCasId}`);
+  }
 }

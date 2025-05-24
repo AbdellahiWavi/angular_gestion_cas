@@ -1,30 +1,50 @@
-<div class="container my-container">
-  <div class="card text-center mx-auto shadow" style="width: 18rem;">
-    <div class="card-body">
-      <h5 class="card-title">S'inscrire</h5>
-      <div class="alert alert-success" *ngIf="errorMsg">
-        {{errorMsg}}
-      </div>
-      <div class="form-floating mb-3">
-        <input type="text" class="form-control" name="username" placeholder="Username" [(ngModel)] = "gestionnaire.username">
-        <label>username</label>
-      </div>
-      <div class="form-floating mb-3">
-          <input type="email" class="form-control" name="email" placeholder="E-mail" [(ngModel)] = "gestionnaire.email">
-          <label>Email address</label>
+<div class="container-fluid">
+  <div class="mb-3 d-flex justify-content-between">
+    <h4>{{ title }}</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">Utilisateurs</li>
+      <li class="breadcrumb-item"><a class="link-primary">{{ title }}</a></li>
+    </ol>
+  </div>
+  <div class="alert alert-danger" *ngIf="errorMsg.length !== 0">
+    @for (message of errorMsg; track $index) {
+    <li style="list-style: disc;">{{message}}</li><br>
+    }
+  </div>
+  <div class="container my-container">
+    <div class="card text-center mx-auto shadow mb-5">
+      <div class="card-body">
+        <h5 class="card-title mb-5">Ajouter un utilisateur</h5>
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" name="username" placeholder="Username"
+            [(ngModel)]="gestionnaire.username">
+          <label>Nom et Prénom</label>
         </div>
-      <div class="form-floating mb-3">
-        <input type="password" class="form-control" name="password" placeholder="Password" [(ngModel)] = "gestionnaire.password">
-        <label>Password</label>
-      </div>
-      <div class="form-floating mb-3">
-        <select class="form-select" [(ngModel)] = "gestionnaire.roles">
-          <option [ngValue]="gestionnaire.roles">Choisir un role</option>
-          <option [ngValue]="[role]" *ngFor="let role of roles">{{role.role}}</option>
-        </select>
-      </div>
-      <div class="mt-2 d-flex justify-content-between">
-        <button type="button" (click)="addUser()" class="btn btn-primary">Ajouter Utilisateur</button>
+        <div class="form-floating mb-3">
+          <input type="email" class="form-control" name="email" placeholder="E-mail" [(ngModel)]="gestionnaire.email">
+          <label>Adresse E-mail</label>
+        </div>
+        <div class="form-floating mb-3">
+          <input type="password" class="form-control" name="password" placeholder="Password"
+            [(ngModel)]="gestionnaire.password">
+          <label>Mot de passe</label>
+        </div>
+        <div class="form-floating mb-3">
+          <select class="form-select" multiple [(ngModel)]="gestionnaire.roles" required>
+            <option [ngValue]="gestionnaire.roles" disabled>Choisir un rôle</option>
+            <option *ngFor="let role of roles" [ngValue]="role">{{ role.role }}</option>
+          </select>
+        </div>
+
+        <div class="alert alert-secondary" *ngIf="gestionnaire.roles">
+          <pre *ngFor="let role of gestionnaire.roles">
+          {{ role.role }}
+        </pre>
+        </div>
+
+        <div class="mt-2 d-flex justify-content-between">
+          <button type="button" (click)="addUser()" class="btn btn-primary mx-auto">Ajouter</button>
+        </div>
       </div>
     </div>
   </div>
