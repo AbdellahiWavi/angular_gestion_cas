@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Config } from 'datatables.net';
 import { Subject } from 'rxjs';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -37,15 +37,21 @@ export class AllOrgExterneComponent implements OnInit, OnDestroy {
   constructor(
     private OrgExterneService: OrgExterneService,
     private messageService: MessageService,
-    private dataTableConfig: DataTableConfiService
-  ) { }
+    private dataTableConfig: DataTableConfiService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.messageService.currentMessage.subscribe({
       next: message => {
         this.successMessage = message;
+        setTimeout(() => {
+          this.successMessage = null;
+          this.cdr.detectChanges();
+        }, 4000);
       }
     });
+
     this.dtoptions = { ...this.dataTableConfig.dtOptionsConfig() };
     this.getOrgExternes();
   }
@@ -53,8 +59,7 @@ export class AllOrgExterneComponent implements OnInit, OnDestroy {
   getOrgExternes(): void {
     this.OrgExterneService.getOrgExternes().subscribe({
       next: (orgExternes: OrgExterne[]) => {
-        this.orgExternes = orgExternes;
-        this.orgExternes = this.disableOrganisme();
+        this.orgExternes = this.disableOrganisme(orgExternes);
 
         if (this.dtElement.dtInstance) {
           this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
@@ -68,7 +73,7 @@ export class AllOrgExterneComponent implements OnInit, OnDestroy {
       error: error => {
         alert(error.message);
       }
-    })
+    });
   }
 
   addOrgExterne(): void {
@@ -76,45 +81,54 @@ export class AllOrgExterneComponent implements OnInit, OnDestroy {
       this.errorMessage = 'Le nom de l\'organisme est requis.';
       return;
     }
+
     this.orgExterne = {
       ...this.orgExterne,
       name: this.orgExterne.name?.toUpperCase(),
       image: this.imgOrgLocation,
-    }
+    };
+
     this.OrgExterneService.addOrgExterne(this.orgExterne).subscribe({
       next: () => {
-        this.messageService.setMessage("L'organisme externe '" + this.orgExterne.name + "' a bien été ajouter");
-        setTimeout(() => {
-          this.getOrgExternes();
-        });
+        this.messageService.setMessage("L'organisme externe '" + this.orgExterne.name + "' a bien été ajouté.");
+        this.getOrgExternes();
         document.getElementById('add-close')?.click();
+        this.resetForm();
       },
       error: () => {
-        this.errorMessage = "Un erreur fourni lors du création de l'organisme";
+        this.errorMessage = "Une erreur s'est produite lors de la création de l'organisme.";
       }
-    })
+    });
   }
 
-  onFileIput(files: FileList | null) {
+  onFileInput(files: FileList | null): void {
     if (files) {
       this.file = files.item(0);
+
       if (this.file) {
+        if (!this.file.type.startsWith('image/')) {
+          this.errorMessage = 'Seuls les fichiers image sont autorisés.';
+          return;
+        }
+
         const fileReader = new FileReader();
         fileReader.readAsDataURL(this.file);
         fileReader.onload = () => {
           if (fileReader.result) {
-            // pour afficher l'image choisi au niveau de l'interface 
             this.imgUrl = fileReader.result;
           }
-        }
+        };
+
         const formData = new FormData();
         formData.append('file', this.file);
+
         this.OrgExterneService.uploadImg(formData).subscribe({
           next: (url: string) => {
             this.imgOrgLocation = url;
-          }, error: error => {
+          },
+          error: error => {
             console.error('Erreur lors de l\'upload', error);
-            this.errorMessage = error.error?.message || 'Erreur inconnue';
+            this.errorMessage = error.error?.message || 'Erreur inconnue lors de l\'upload de l\'image.';
           }
         });
       }
@@ -134,29 +148,30 @@ export class AllOrgExterneComponent implements OnInit, OnDestroy {
     button.remove();
   }
 
-
   hideOrg(): void {
     document.getElementById('close')?.click();
 
-    this.OrgExterneService.updateIsActive(this.id).subscribe({
+    this.OrgExterneService.disableOrganisme(this.id).subscribe({
       next: () => {
-        this.successMessage = "l'organisme a été désactiver";
+        this.successMessage = "L'organisme a été désactivé.";
         this.getOrgExternes();
-      }, error: error => {
+      },
+      error: error => {
         alert(error.message);
       }
     });
   }
 
-  disableOrganisme(): OrgExterne[] {
-    return this.orgExternes.filter(org => org.active);
+  disableOrganisme(orgExternes: OrgExterne[]): OrgExterne[] {
+    return orgExternes.filter(org => org.active);
   }
 
-  resetForm() {
-    this.orgExterne = {
-      name: ''
-    };
+  resetForm(): void {
+    this.orgExterne = { name: '' };
     this.errorMessage = '';
+    this.imgUrl = 'assets/images/author_logo.jpg';
+    this.imgOrgLocation = '';
+    this.file = null;
   }
 
   ngOnDestroy(): void {

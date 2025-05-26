@@ -3,5 +3,6 @@ export interface Client {
     username?: string,
     tel?: string,
     password?: string,
-    dateCreation: Date
+    dateCreation: Date,
+    active: boolean
 }

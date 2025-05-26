@@ -19,8 +19,8 @@ export class ServiceClientService {
     return this.http.get<Client[]>(`${this.apiServiceUrl}/client/all`);
   }
   
-  deleteClient(ClientId?: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiServiceUrl}/client/delete/${ClientId}`);
+  disableClient(ClientId?: number): Observable<void> {
+    return this.http.put<void>(`${this.apiServiceUrl}/client/isActive/${ClientId}`, {});
   }
 
 }

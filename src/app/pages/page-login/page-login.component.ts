@@ -3,7 +3,6 @@ import { ServiceLoginService } from '../../services/user/login/service-login.ser
 import { AuthenticationRequest } from '../../services/user/authenticationRequest';
 import { Router } from '@angular/router';
 import { MessageService } from '../../services/messages-service/message.service';
-import { error } from 'jquery';
 
 @Component({
   selector: 'app-page-login',
@@ -33,7 +32,7 @@ export class PageLoginComponent {
   }
 
   login() {
-    if (this.authenticationRequest.login && this.authenticationRequest.password) {
+    if (this.authenticationRequest.login?.trim() && this.authenticationRequest.password?.trim()) {
       if (this.isValidEmail(this.authenticationRequest.login)) {
         this.loginService.login(this.authenticationRequest).subscribe({
           next: (data) => {

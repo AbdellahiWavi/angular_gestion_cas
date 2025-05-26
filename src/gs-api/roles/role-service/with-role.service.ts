@@ -22,13 +22,9 @@ export class WithRoleService {
   addRole(role: Role): Observable<Role> {
     return this.http.post<Role>(`${this.gestionCasApi}/role/add`, role);
   }
-  
-  updateRole(role: Role): Observable<Role> {
-    return this.http.put<Role>(`${this.gestionCasApi}/role/update`, role);
-  }
 
-  deleteRole(roleId?: number): Observable<void> {
-    return this.http.delete<void>(`${this.gestionCasApi}/role/delete/${roleId}`);
+  disableRole(roleId: number): Observable<void> {
+    return this.http.put<void>(`${this.gestionCasApi}/role/isActive/${roleId}`, {});
   }
   
 }

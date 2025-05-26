@@ -2,6 +2,7 @@ import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges } fro
 import { ActivatedRoute, Router } from '@angular/router';
 import * as L from 'leaflet';
 import { MarkerService } from '../marker.service';
+import { Incident } from '../../../gs-api/incident/incident';
 
 const iconRetinaUrl = 'assets/marker-icon-2x.png';
 const iconUrl = 'assets/marker-icon.png';
@@ -30,30 +31,27 @@ export class MapComponent implements OnChanges {
 
   private map!: L.Map | L.LayerGroup<any>;
 
-  @Input() incidentLocation!: { lat?: string | undefined; lon?: string | undefined; city?: string | undefined; } | undefined;
-  lat!: number;
-  lon!: number;
-  city!: string;
+  @Input() incident!: Incident;
 
   constructor(
     private markerService: MarkerService
   ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['incidentLocation'] && this.incidentLocation?.lat && this.incidentLocation?.lon) {
-      this.lat = Number(this.incidentLocation.lat);
-      this.lon = Number(this.incidentLocation.lon);
-      this.city = String(this.incidentLocation.city);
+    if (changes['incident'] && this.incident?.userLocation?.latitude && this.incident?.userLocation?.longitude) {
+      const lat = Number(this.incident.userLocation?.latitude);
+      const lon = Number(this.incident.userLocation?.longitude);
+      const city = String(this.incident.zone?.city);
       
-      if (this.lat !== 0 && this.lon !== 0) {
-        this.initMap();
-        this.markerService.makeCityMarker(this.map, this.lat, this.lon, this.city);
+      if (lat !== 0 && lon !== 0) {
+        this.initMap(lat, lon);
+        this.markerService.makeCityMarker(this.map, lat, lon, city);
       }
     }
   }
 
-  private initMap(): void {
-    this.map = this.markerService.iniMapService(this.lat, this.lon);
+  private initMap(lat: number, lon: number): void {
+    this.map = this.markerService.iniMapService(lat, lon);
   }
 
 }

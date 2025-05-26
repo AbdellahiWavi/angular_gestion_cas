@@ -28,7 +28,7 @@ export class AfficherIncidentComponent implements OnInit{
       if (!this.id) {
         this.router.navigate(['/displayAllIncident']);
       } else {
-        this.getIncident(this.id); // appeler ici
+        this.getIncident(this.id);
       }
     });
   }

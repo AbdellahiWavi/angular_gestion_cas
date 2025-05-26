@@ -9,10 +9,8 @@
     <div class="alert alert-success" *ngIf="typeof successMsg === 'string' && successMsg">
         {{successMsg}}
     </div>
-    <div class="alert alert-success" *ngIf="isArray(successMsg)">
-        @for (message of successMsg; track $index) {
-        {{message}}<br>
-        }
+    <div *ngIf="loading" class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
     </div>
     <!-- DataTales -->
     <div class="card shadow mb-4">
@@ -21,15 +19,15 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger"
-                    width="100%" cellspacing="0">
+                <table class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger" #dtElement
+                    #DataTables_Table_0 width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>ID Client</th>
                             <th>Statut</th>
                             <th>Date</th>
-                            <th>Dernier changement de status</th>
+                            <th>Date changement de status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -49,8 +47,7 @@
                             <td>
                                 <div class="row">
                                     <div class="col-4">
-                                        <a [routerLink]="['/updateIncident']"
-                                            [queryParams]="{ id: incident.id, status: incident.status }">
+                                        <a (click)="canHide(incident, 'updateStatusModal')">
                                             <fa-icon [icon]="pen"
                                                 style="color: rgb(86, 239, 96); display: inline;"></fa-icon>
                                         </a>
@@ -61,7 +58,7 @@
                                         </a>
                                     </div>
                                     <div class="col-4">
-                                        <a (click)="canHide(incident.id!)">
+                                        <a (click)="canHide(incident.id!, 'disableUserModal')">
                                             <fa-icon [icon]="trash" style="color: rgb(255, 72, 48);"></fa-icon>
                                         </a>
                                     </div>
@@ -71,13 +68,41 @@
                     </tbody>
                 </table>
             </div>
-            <!-- Modal -->
-            <div class="modal fade" id="{{target}}" tabindex="-1" [attr.aria-labelledby]="labelledby"
+            <!-- Update status incident Modal -->
+            <div class="modal fade" id="updateStatusModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="updateStatusModalLabel">Mettre à jour status</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="col-auto">
+                                <select name="status" class="form-select" [(ngModel)]="newStatus">
+                                    @for (status of statusOptions; track $index) {
+                                    <option [ngValue]="status.label">
+                                        {{status.label}}
+                                    </option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="update-close" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Annuler</button>
+                            <button type="button" class="btn btn-primary" (click)="updateStatus()">Modifier</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Delete incident Modal -->
+            <div class="modal fade" id="disableUserModal" tabindex="-1" aria-labelledby="disableUserModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="{{labelledby}}">Confirmation</h5>
+                            <h5 class="modal-title" id="disableUserModalLabel">Confirmation</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">

@@ -10,7 +10,7 @@ import { MessageService } from '../../messages-service/message.service';
 @Injectable({
   providedIn: 'root'
 })
-export class ServiceLoginService implements OnInit{
+export class ServiceLoginService implements OnInit {
 
   private readonly gestionCasApi = environment.gestionCasApi;
 
@@ -26,8 +26,8 @@ export class ServiceLoginService implements OnInit{
 
   login(authenticationRequest: AuthenticationRequest): Observable<AuthenticationResponse> {
     return this.http.post<AuthenticationResponse>(
-      `${(this.gestionCasApi)}/auth/authenticate`, authenticationRequest, 
-      {withCredentials: true}
+      `${(this.gestionCasApi)}/auth/authenticate`, authenticationRequest,
+      { withCredentials: true }
     );
   }
 
@@ -38,25 +38,33 @@ export class ServiceLoginService implements OnInit{
   isLoggedUserAndAccessTokenValide(): boolean {
     const token = localStorage.getItem('accessToken');
 
-    if (token && !this.isTokenExpired(token)) {
+    if (!token) {
+      this.router.navigate(['/login']);
+      return false;
+    }
+
+    if (!this.isTokenExpired(token)) {
       return true;
     }
-    this.messageService.setMessage("Dommage! le temps de connection est expirée :(.");
+
+    this.messageService.setMessage("Le temps de connection est expirée :(.");
+    localStorage.removeItem('accessToken');
+
     this.router.navigate(['/login']);
     return false;
   }
 
-  
+
   isTokenExpired(token: string): boolean {
     if (!token) return true;
-  
+
     const payload = token.split('.')[1];
     if (!payload) return true;
 
     const decoded = JSON.parse(atob(payload));
     const exp = decoded.exp;
     const now = Math.floor(Date.now() / 1000);
-    
+
     return exp < now;
   }
 

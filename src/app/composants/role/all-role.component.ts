@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Config } from 'datatables.net';
 import { Subject } from 'rxjs';
 import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -15,14 +15,15 @@ import { MessageService } from '../../services/messages-service/message.service'
   templateUrl: './all-role.component.html',
   styleUrl: './all-role.component.css'
 })
-export class AllRoleComponent implements OnInit {
+export class AllRoleComponent implements OnInit, OnDestroy {
 
-  title = 'Tableau des roles';
+  title = 'Tableau des rôles';
   successMessage: string | string[] | null = '';
   errorMessage = '';
   eye = faEye;
   pen = faPen;
   trash = faTrash;
+
   id!: number;
 
   roles: Role[] = [];
@@ -37,15 +38,21 @@ export class AllRoleComponent implements OnInit {
   constructor(
     private roleService: WithRoleService,
     private messageService: MessageService,
-    private dataTableConfig: DataTableConfiService
+    private dataTableConfig: DataTableConfiService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.messageService.currentMessage.subscribe({
       next: message => {
         this.successMessage = message;
+        setTimeout(() => {
+          this.successMessage = null;
+          this.cdr.detectChanges();
+        }, 4000);
       }
     });
+
     this.dtoptions = this.dataTableConfig.dtOptionsConfig();
     this.getRoles();
   }
@@ -53,42 +60,47 @@ export class AllRoleComponent implements OnInit {
   getRoles(): void {
     this.roleService.getRoles().subscribe({
       next: (response: Role[]) => {
-        this.roles = response;
-        console.log(this.roles);
+        this.roles = this.disableRole(response);
 
-        // Si la DataTable a déjà été initialisée
         if (this.dtElement.dtInstance) {
           this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
-            dtInstance.destroy(); // détruire l'ancienne instance
-            this.dtTrigger.next(null); // réinitialiser le trigger
+            dtInstance.destroy();
+            this.dtTrigger.next(null);
           });
         } else {
-          this.dtTrigger.next(null); // Première initialisation
+          this.dtTrigger.next(null);
         }
       },
       error: error => {
         console.error("Erreur lors du chargement des rôles :", error);
+        this.errorMessage = "Échec du chargement des rôles. Veuillez réessayer plus tard.";
       }
     });
   }
 
   addRole(): void {
+    if (!this.role.role?.trim() || !this.role.profile?.trim()) {
+      this.errorMessage = "Le rôle et le profil sont requis.";
+      return;
+    }
+
     this.role = {
-      ...this.role, // Conserve tout
+      ...this.role,
       role: this.role.role?.toUpperCase(),
       profile: this.role.profile?.toUpperCase()
     };
+
     this.roleService.addRole(this.role).subscribe({
       next: () => {
         this.getRoles();
-        this.messageService.setMessage("Le rôle '" + this.role.role + " et le profil " + this.role.profile + "' sont ajoutés");
+        this.messageService.setMessage(`Le rôle '${this.role.role}' avec le profil '${this.role.profile}' a bien été ajouté.`);
         document.getElementById('add-close')?.click();
+        this.resetForm();
       },
       error: (error) => {
-        this.errorMessage = error.error.message;
-        this.resetForm();
+        this.errorMessage = error.error?.message || "Une erreur est survenue lors de l'ajout du rôle.";
       }
-    })
+    });
   }
 
   canHide(id: number, target: string): void {
@@ -108,21 +120,26 @@ export class AllRoleComponent implements OnInit {
   hideRole(): void {
     document.getElementById('close')?.click();
 
-    this.roleService.deleteRole(this.id).subscribe({
+    this.roleService.disableRole(this.id).subscribe({
       next: () => {
-        this.successMessage = "Le rôle a bien été supprimé";
+        this.successMessage = "Le rôle a bien été supprimé.";
         this.getRoles();
-      }, error: () => {
-        this.errorMessage = "Un erreur est survenu lors de la suppression"
+      },
+      error: () => {
+        this.errorMessage = "Une erreur est survenue lors de la suppression du rôle.";
       }
     });
   }
 
-  resetForm() {
+  disableRole(roles: Role[]): Role[] {
+    return roles.filter(r => r.active);
+  }
+  resetForm(): void {
     this.role = {
       role: '',
       profile: ''
-    }
+    };
+    this.errorMessage = '';
   }
 
   ngOnDestroy(): void {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Config } from 'datatables.net';
 import { Subject } from 'rxjs';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -13,7 +13,7 @@ import { MessageService } from '../../services/messages-service/message.service'
   selector: 'all-degree',
   standalone: false,
   templateUrl: './all-degree.component.html',
-  styleUrls: ['./all-degree.component.css'] // Corrigé : styleUrls au lieu de styleUrl
+  styleUrls: ['./all-degree.component.css']
 })
 export class AllDegreeComponent implements OnInit, OnDestroy {
   title = 'Tableau des degrees';
@@ -35,12 +35,19 @@ export class AllDegreeComponent implements OnInit, OnDestroy {
   constructor(
     private degreeService: DegreeService,
     private messageService: MessageService,
-    private dataTableConfig: DataTableConfiService
+    private dataTableConfig: DataTableConfiService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.messageService.currentMessage.subscribe({
-      next: message => this.successMessage = message
+      next: message => {
+        this.successMessage = message;
+        setTimeout(() => {
+          this.successMessage = null;
+          this.cdr.detectChanges();
+        }, 4000);
+      }
     });
 
     this.dtOptions = this.dataTableConfig.dtOptionsConfig();
@@ -50,8 +57,7 @@ export class AllDegreeComponent implements OnInit, OnDestroy {
   loadDegrees(): void {
     this.degreeService.getDegrees().subscribe({
       next: (degrees: Degree[]) => {
-        this.degrees = degrees;
-        this.degrees = this.deactvateDegrees();
+        this.degrees = this.deactvateDegrees(degrees);
 
         if (this.dtElement?.dtInstance) {
           this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
@@ -101,7 +107,7 @@ export class AllDegreeComponent implements OnInit, OnDestroy {
   deactivateDegree(): void {
     document.getElementById('close')?.click();
 
-    this.degreeService.updateIsActive(this.idToDeactivate).subscribe({
+    this.degreeService.disableDegree(this.idToDeactivate).subscribe({
       next: () => {
         this.successMessage = 'Le degree a bien été désactivé';
         this.loadDegrees();
@@ -110,8 +116,8 @@ export class AllDegreeComponent implements OnInit, OnDestroy {
     });
   }
 
-  deactvateDegrees(): Degree[] {
-    return this.degrees.filter(degree => degree.active);
+  deactvateDegrees(degrees: Degree[]): Degree[] {
+    return degrees.filter(degree => degree.active);
   }
 
   resetForm(): void {

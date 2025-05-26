@@ -14,8 +14,6 @@ import { HeaderComponent } from './composants/header/header.component';
 import { DataTablesModule} from 'angular-datatables';
 import { AllIncidentsComponent } from './composants/incidents/all-incidents/all-incidents.component';
 import { NonAffecteComponent } from './composants/incidents/non-affecte/non-affecte.component';
-import { UpdateIncidentComponent } from './composants/incidents/update-incident/update-incident.component';
-import { PageUpdateIncidentComponent } from './pages/incidents/page-update-incident/page-update-incident.component';
 import { PageNonAffecteComponent } from './pages/incidents/page-non-affecte/page-non-affecte.component';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -51,13 +49,12 @@ import { PageAllUtilisateursComponent } from './pages/utilisateurs/page-all-util
     HeaderComponent,
     AllIncidentsComponent,
     NonAffecteComponent,
-    UpdateIncidentComponent,
-    PageUpdateIncidentComponent,
     PageNonAffecteComponent,
     PageAllUtilisateursComponent,
     AllUtilisateursComponent,
     PageRoleComponent,
     AllRoleComponent,
+    AllClientComponent,
     PageAllClientsComponent,
     AllClientComponent,
     PageAllDegreeComponent,

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Config } from 'datatables.net';
 import { Subject } from 'rxjs';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -18,21 +18,22 @@ import { MessageService } from '../../services/messages-service/message.service'
   styleUrl: './all-types-cas.component.css'
 })
 export class AllTypesCasComponent implements OnInit, OnDestroy {
-  title = 'Tableau des Type Cas';
+  title = 'Tableau des Types de Cas';
   id!: number;
   trash = faTrash;
+
   successMessage: string | string[] | null = '';
   errorMessage = '';
 
   typesCas: TypeCas[] = [];
   orgExternes: OrgExterne[] = [];
+
   typeCas: TypeCas = {
     destination: {}
   };
 
   dtoptions: Config = {};
   dtTrigger: Subject<any> = new Subject<any>();
-
 
   @ViewChild(DataTableDirective, { static: false })
   dtElement!: DataTableDirective;
@@ -41,18 +42,25 @@ export class AllTypesCasComponent implements OnInit, OnDestroy {
     private typeCasService: TypeCasService,
     private messageService: MessageService,
     private orgExterneService: OrgExterneService,
-    private dataTableConfig: DataTableConfiService
+    private dataTableConfig: DataTableConfiService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.messageService.currentMessage.subscribe({
       next: message => {
         this.successMessage = message;
+        setTimeout(() => {
+          this.successMessage = null;
+          this.cdr.detectChanges();
+        }, 4000);
       }
+
     });
+
     this.dtoptions = this.dataTableConfig.dtOptionsConfig();
     this.getTypesCas();
-    this.getOrgExterenes();
+    this.getOrgExternes();
   }
 
   getTypesCas(): void {
@@ -60,63 +68,64 @@ export class AllTypesCasComponent implements OnInit, OnDestroy {
       next: (typesCas: TypeCas[]) => {
         this.typesCas = typesCas;
 
-        // Si la DataTable a déjà été initialisée
         if (this.dtElement.dtInstance) {
           this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
-            dtInstance.destroy(); // détruire l'ancienne instance
-            this.dtTrigger.next(null); // réinitialiser le trigger
-          })
+            dtInstance.destroy();
+            this.dtTrigger.next(null);
+          });
         } else {
-          this.dtTrigger.next(null); // Première initialisation
+          this.dtTrigger.next(null);
         }
       },
       error: error => {
-        alert(error.message);
+        this.errorMessage = 'Erreur lors du chargement des types de cas.';
       }
-    })
+    });
   }
 
-  getOrgExterenes(): void {
+  getOrgExternes(): void {
     this.orgExterneService.getOrgExternes().subscribe({
       next: orgExternes => {
         this.orgExternes = orgExternes;
       },
       error: error => {
-        alert(error.message);
+        this.errorMessage = 'Erreur lors du chargement des organismes externes.';
       }
     });
   }
 
   addTypeCas(): void {
     if (!this.typeCas.type?.trim()) {
-      this.errorMessage = 'Le champ type est requis.';
+      this.errorMessage = 'Le champ "Type" est requis.';
       return;
     }
+
     if (!this.typeCas.destination.name?.trim()) {
-      this.errorMessage = 'La choisir de l\'organisme est requis';
+      this.errorMessage = 'Veuillez choisir un organisme.';
       return;
     }
+
     this.typeCasService.addTypeCas(this.typeCas).subscribe({
       next: () => {
-        this.messageService.setMessage("Le type de cas '" + this.typeCas.type + "' a bien été ajouter");
+        this.messageService.setMessage(`Le type de cas '${this.typeCas.type}' a bien été ajouté.`);
         this.getTypesCas();
         document.getElementById('add-close')?.click();
+        this.resetForm();
       },
-      error: (error) => {
-        this.errorMessage = error.error.message;
+      error: error => {
+        this.errorMessage = "Erreur lors de l'ajout du type de cas.";
       }
-    })
+    });
   }
 
   canHide(id: number, target: string): void {
     this.id = id;
-    const div = document.querySelector('.row');
     const button = document.createElement('button');
     button.type = 'button';
     button.style.display = 'none';
     button.setAttribute('data-bs-toggle', 'modal');
-    button.setAttribute('data-bs-target', '#' + target);
-    div?.appendChild(button);
+    button.setAttribute('data-bs-target', `#${target}`);
+    document.querySelector('.row')?.appendChild(button);
     button.click();
     button.remove();
   }
@@ -124,13 +133,13 @@ export class AllTypesCasComponent implements OnInit, OnDestroy {
   hideCas(): void {
     document.getElementById('close')?.click();
 
-    this.typeCasService.updateIsActive(this.id).subscribe({
+    this.typeCasService.disableTypeCas(this.id).subscribe({
       next: () => {
-        this.typesCas = this.disableTypeCas();
-        this.successMessage = "le degree est bien été désactiver";
+        this.successMessage = "Le type de cas a bien été désactivé.";
         this.getTypesCas();
-      }, error: error => {
-        alert(error.message);
+      },
+      error: () => {
+        this.errorMessage = "Erreur lors de la désactivation.";
       }
     });
   }
@@ -139,14 +148,16 @@ export class AllTypesCasComponent implements OnInit, OnDestroy {
     return this.typesCas.filter(cas => cas.active);
   }
 
-  resetForm() {
+  resetForm(): void {
     this.typeCas = {
       type: '',
       destination: {}
-    }
+    };
+    this.errorMessage = '';
   }
- 
+
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
   }
 }
+

@@ -12,10 +12,10 @@ export class ApplicationGuardService implements CanActivate {
   ) { }
 
   canActivate(
-    route: ActivatedRouteSnapshot, 
+    route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): MaybeAsync<GuardResult> {
-    
+
     return this.loginService.isLoggedUserAndAccessTokenValide();
   }
 }

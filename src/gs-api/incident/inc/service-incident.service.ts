@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Incident } from '../incident';
 import { environment } from '../../../environments/environment';
+import { IncidentUpdateStatus } from '../incidentUpdateStatus';
 
 @Injectable({
   providedIn: 'root'
@@ -23,8 +24,8 @@ export class ServiceIncidentService {
     return this.http.get<Incident>(`${(this.apiServiceUrl)}/incident/find/${incidentId}`);
   }
 
-  updateIncident(incident: Incident): Observable<Incident> {
-    return this.http.put<Incident>(`${(this.apiServiceUrl)}/incident/update`, incident);
+  updateStatus(incident: IncidentUpdateStatus): Observable<void> {
+    return this.http.put<void>(`${(this.apiServiceUrl)}/incident/status`, incident);
   }
 
   deleteIncident(IncidentId: number): Observable<void> {
@@ -33,6 +34,6 @@ export class ServiceIncidentService {
 
   // TODO modifier cet endpoint pour retourner un void au lieu de incident et aussi pour toutes les approches
   updateIsActive(incidentId: number): Observable<void> {
-    return this.http.get<void>(`${(this.apiServiceUrl)}/incident/isActive/${incidentId}`);
+    return this.http.put<void>(`${(this.apiServiceUrl)}/incident/isActive/${incidentId}`, {});
   }
 }

@@ -38,8 +38,8 @@ export class OrgExterneService {
     return this.http.post<string>(`${this.gestionCasApi}/images/upload`, imgUrl, {responseType: 'text' as 'json'});
   }
 
-  updateIsActive(id: number): Observable<OrgExterne> {
-    return this.http.get<OrgExterne>(`${this.gestionCasApi}/organismeext/isActive/${id}`);
+  disableOrganisme(id: number): Observable<void> {
+    return this.http.put<void>(`${this.gestionCasApi}/organismeext/isActive/${id}`, {});
   }
 
 }

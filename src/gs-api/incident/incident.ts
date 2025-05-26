@@ -7,10 +7,14 @@ export interface Incident {
     dateTraitement?: Date,
     dernierChEta?: Date,
     status?: string,
-    place?: {
-        lat?: string,
-        lon?: string,
-        city?: string
+    zone?: {
+        id?: number,
+        city?: string,
+        geometry?: string
+    },
+    userLocation?: {
+        latitude?: number,
+        longitude?: number,
     },
     degree?: {
         type_degree?: string

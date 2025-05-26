@@ -28,8 +28,8 @@ export class GsServiceService {
     return this.http.put<Gestionnaire>(`${this.gestionCasApi}/gestionnaire/update`, gestionnaire);
   }
 
-  deleteUser(userId?: number): Observable<void> {
-    return this.http.delete<void>(`${this.gestionCasApi}/gestionnaire/delete/${userId}`);
+  disableUser(userId: number): Observable<void> {
+    return this.http.put<void>(`${this.gestionCasApi}/gestionnaire/isActive/${userId}`, {});
   }
   
 }

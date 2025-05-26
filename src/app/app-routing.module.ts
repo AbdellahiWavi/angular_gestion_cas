@@ -5,7 +5,6 @@ import { PageInscriptionComponent } from './pages/page-inscription/page-inscript
 import { PageDashboardComponent } from './pages/page-dashboard/page-dashboard.component';
 import { TableBordComponent } from './pages/table-bord/table-bord.component';
 import { PageAllIncidentsComponent } from './pages/incidents/page-all-incidents/incidents.component';
-import { PageUpdateIncidentComponent } from './pages/incidents/page-update-incident/page-update-incident.component';
 import { PageNonAffecteComponent } from './pages/incidents/page-non-affecte/page-non-affecte.component';
 import { MapComponent } from './localisation/map/map.component';
 import { AfficherIncidentComponent } from './pages/detaille-incident/afficher-incident.component';
@@ -46,11 +45,6 @@ const routes: Routes = [
       {
         path: 'displayAllIncident',
         component: PageAllIncidentsComponent,
-        canActivate: [ApplicationGuardService]
-      },
-      {
-        path: 'updateIncident',
-        component: PageUpdateIncidentComponent,
         canActivate: [ApplicationGuardService]
       },
       {
