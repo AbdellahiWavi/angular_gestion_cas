@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Config } from 'datatables.net';
 import { MessageService } from '../../../services/messages-service/message.service';
 import { DataTableConfiService } from '../../../services/dataTableConfig/data-table-confi.service';
@@ -10,6 +10,7 @@ import { Status } from '../status';
 import { DataTableDirective } from 'angular-datatables';
 import type * as dt from 'datatables.net';
 import { IncidentUpdateStatus } from '../../../../gs-api/incident/incidentUpdateStatus';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-all-incidents',
@@ -17,12 +18,9 @@ import { IncidentUpdateStatus } from '../../../../gs-api/incident/incidentUpdate
   templateUrl: './all-incidents.component.html',
   styleUrl: './all-incidents.component.css'
 })
-export class AllIncidentsComponent implements OnInit, OnDestroy {
+export class AllIncidentsComponent implements OnInit, OnDestroy, AfterViewInit {
+  
   title = 'Tableau des incidents';
-  eye = faEye;
-  pen = faPen;
-  trash = faTrash;
-
   id: number | null = null;
   successMsg: string | string[] | null = '';
   incidents: Incident[] = [];
@@ -43,11 +41,48 @@ export class AllIncidentsComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private dataTableConfig: DataTableConfiService,
     private incidentService: ServiceIncidentService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private renderer: Renderer2,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
     this.dtoptions = this.dataTableConfig.dtOptionsConfig([[0, 'desc']]);
+    this.dtoptions.columns = [
+        { data: 'id', title: 'ID' },
+        { data: 'client.id', title: 'ID Client' },
+        {
+          data: 'status',
+          title: 'Statut',
+          render: (data: any) =>
+            `<div style="background-color: rgb(203, 247, 203); border-radius: 5px;">${data}</div>`
+        },
+        { data: 'dateCreation', title: 'Date' },
+        { data: 'dernierChEta', title: 'Date changement de status' },
+        {
+          data: null,
+          title: 'Actions',
+          orderable: false,
+          render: (data: any, type: any, row: any) => `
+            <div class="row">
+              <div class="col-4">
+                <a class="action-update" data-id="${row.id}">
+                  <i class="fa-solid fa-pen" style="color: rgb(86, 239, 96);"></i>
+                </a>
+              </div>
+              <div class="col-4">
+                <a class="action-view" data-id="${row.id}">
+                  <i class="fas fa-eye" style="color: rgb(44, 44, 245);"></i>
+                </a>
+              </div>
+              <div class="col-4">
+                <a class="action-delete" data-id="${row.id}">
+                  <i class="fas fa-trash" style="color: rgb(255, 72, 48);"></i>
+                </a>
+              </div>
+            </div>`
+        }
+    ]
 
     this.messageService.currentMessage.subscribe(message => {
       if (message) {
@@ -59,39 +94,61 @@ export class AllIncidentsComponent implements OnInit, OnDestroy {
         }, 4000);
       }
     });
-
+    
     this.getIncidents();
   }
 
-
   getIncidents(): void {
-    this.loading = true;
+    // Fetch data from service
     this.incidentService.getIncidents().subscribe({
-      next: (incidents: Incident[]) => {
-        const filtered = this.disableIncident(incidents);
-        this.reloadDataTable(filtered);
-        this.loading = false;
+      next: (data) => {
+        this.incidents = this.disableIncident(data);
+        // Update DataTable after data is fetched
+        this.updateTable();
       },
       error: (err) => {
-        console.error(err);
-        this.loading = false;
+        console.error('Error fetching incidents:', err);
       }
     });
   }
 
+  ngAfterViewInit(): void {
+    // Trigger initial DataTable rendering
+    this.dtTrigger.next(null);
 
-  reloadDataTable(newData: Incident[]) {
-    this.incidents= newData;
-    if (this.dtElement.dtInstance) {
-      this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
-        dtInstance.destroy();
-        this.dtTrigger.next(null);
-      });
-    } else {
-      this.dtTrigger.next(null);
-    }
+    // Bind action events using Angular Renderer2
+    this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
+      const tableElement = document.querySelector('#dataTable');
+      if (tableElement) {
+        // Handle update action
+        this.renderer.listen(tableElement, 'click', (event: { target: HTMLElement; }) => {
+          const target = event.target as HTMLElement;
+          if (target.closest('.action-update')) {
+            const id = target.closest('.action-update')?.getAttribute('data-id');
+            const incident = this.incidents.find((inc) => inc.id === Number(id));
+            this.canHide(incident!, 'updateStatusModal');
+          }
+          if (target.closest('.action-view')) {
+            const id = target.closest('.action-view')?.getAttribute('data-id');
+            this.router.navigate(['/detailsIncident'], { queryParams: { id } });
+          }
+          if (target.closest('.action-delete')) {
+            const id = target.closest('.action-delete')?.getAttribute('data-id');
+            this.canHide(Number(id), 'disableUserModal');
+          }
+        });
+      }
+    });
   }
 
+  // Update DataTable with fetched data
+  updateTable(): void {
+    this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
+      dtInstance.clear(); // Clear existing rows
+      dtInstance.rows.add(this.incidents); // Add new data
+      dtInstance.draw(); // Redraw table
+    });
+  }
 
   canHide(idOrStatus: number | Incident, target: string): void {
     if (typeof idOrStatus === 'number') {
@@ -167,4 +224,5 @@ export class AllIncidentsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
   }
+
 }

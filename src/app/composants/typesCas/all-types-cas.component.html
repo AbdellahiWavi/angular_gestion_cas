@@ -19,36 +19,17 @@
                 Ajouter
             </button>
             <div class="table-responsive">
-                <table class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger"
+                <table id="dataTable" class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger"
                     width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>type de cas</th>
-                            <th>organisme externe</th>
-                            <th>Action</th>
+                            <th>Type de cas</th>
+                            <th>Organisme externe</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr *ngFor="let typeCas of typesCas">
-                            <td>{{typeCas.id_cas}}</td>
-                            <td>{{typeCas.type}}</td>
-                            <td>
-                                {{typeCas.destination.name}}
-                            </td>
-                            <td>
-                                <div class="row">
-                                    <div class="col-4"></div>
-                                    <div class="col-4">
-                                        <a (click)="canHide(typeCas.id_cas!, 'hideOrganisme')">
-                                            <fa-icon [icon]="trash" style="color: rgb(255, 72, 48);"></fa-icon>
-                                        </a>
-                                    </div>
-                                    <div class="col-4"></div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
             <!-- Add type Modal -->
@@ -87,12 +68,12 @@
                 </div>
             </div>
             <!-- Delete type Modal -->
-            <div class="modal fade" id="hideOrganisme" tabindex="-1" aria-labelledby= "hideOrganismeLabel"
+            <div class="modal fade" id="hideTypeCas" tabindex="-1" aria-labelledby= "hideTypeCasLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="hideOrganismeLabel">Confirmation</h5>
+                            <h5 class="modal-title" id="hideTypeCasLabel">Confirmation</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">

@@ -16,43 +16,26 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger"
-                    width="100%" cellspacing="0">
+                <table id="dataTable" class="table table-striped" datatable [dtOptions]="dtoptions" #dtElement
+                    [dtTrigger]="dtTrigger" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>nom</th>
-                            <th>numéro telephone</th>
-                            <th>Action</th>
+                            <th>Nom complet</th>
+                            <th>Numéro telephone</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr *ngFor="let client of clients">
-                            <td>{{client.id}}</td>
-                            <td>{{client.username}}</td>
-                            <td>{{client.tel}}</td>
-                            <td>
-                                <div class="row">
-                                    <div class="col-4"></div>
-                                    <div class="col-4">
-                                        <a (click)="canHide(client.id!)">
-                                            <fa-icon [icon]="trash" style="color: rgb(255, 72, 48);"></fa-icon>
-                                        </a>
-                                    </div>
-                                    <div class="col-4"></div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
             <!-- Modal -->
-            <div class="modal fade" id="{{target}}" tabindex="-1" [attr.aria-labelledby]="labelledby"
+            <div class="modal fade" id="disableClientModal" tabindex="-1" aria-labelledby="disableClientModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="{{labelledby}}">Confirmation</h5>
+                            <h5 class="modal-title" id="disableClientModalLabel">Confirmation</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">

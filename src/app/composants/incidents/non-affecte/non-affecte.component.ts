@@ -1,15 +1,15 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Config } from 'datatables.net';
 import { Subject } from 'rxjs';
 import { ServiceIncidentService } from '../../../../gs-api/incident/inc/service-incident.service';
 import { Incident } from '../../../../gs-api/incident/incident';
 import { DataTableConfiService } from '../../../services/dataTableConfig/data-table-confi.service';
 import { MessageService } from '../../../services/messages-service/message.service';
-import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { DataTableDirective } from 'angular-datatables';
 import { IncidentUpdateStatus } from '../../../../gs-api/incident/incidentUpdateStatus';
 import { Status } from '../status';
 import type * as dt from 'datatables.net';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-non-affecte',
@@ -20,58 +20,133 @@ import type * as dt from 'datatables.net';
 export class NonAffecteComponent implements OnInit {
 
   title = 'Non Affecté';
-  eye = faEye;
-  pen = faPen;
-  trash = faTrash;
-
   id: number | null = null;
   successMsg: string | string[] | null = '';
   incidents: Incident[] = [];
+  loading = true;
 
   newStatus: string | null = null;
-  incident: Incident = { status: '' };
+  incident: Incident = {};
   incidentUpdateStatus: IncidentUpdateStatus = {};
 
   statusOptions = Object.entries(Status).map(([value, label]) => ({ value, label }));
   dtTrigger: Subject<any> = new Subject();
   dtoptions: Config = {};
 
-  @ViewChild(DataTableDirective, { static: false })
+  @ViewChild(DataTableDirective)
   dtElement!: DataTableDirective;
 
   constructor(
     private messageService: MessageService,
     private dataTableConfig: DataTableConfiService,
-    private incidentService: ServiceIncidentService
+    private incidentService: ServiceIncidentService,
+    private cdr: ChangeDetectorRef,
+    private renderer: Renderer2,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
+    this.dtoptions = this.dataTableConfig.dtOptionsConfig([[0, 'desc']]);
+    this.dtoptions.columns = [
+      { data: 'id', title: 'ID' },
+      { data: 'client.id', title: 'ID Client' },
+      {
+        data: 'status',
+        title: 'Statut',
+        render: (data: any) =>
+          `<div style="background-color: rgb(203, 247, 203); border-radius: 5px;">${data}</div>`
+      },
+      { data: 'dateCreation', title: 'Date' },
+      { data: 'dernierChEta', title: 'Date changement de status' },
+      {
+        data: null,
+        title: 'Actions',
+        orderable: false,
+        render: (data: any, type: any, row: any) => `
+            <div class="row">
+              <div class="col-4">
+                <a class="action-update" data-id="${row.id}">
+                  <i class="fa-solid fa-pen" style="color: rgb(86, 239, 96);"></i>
+                </a>
+              </div>
+              <div class="col-4">
+                <a class="action-view" data-id="${row.id}">
+                  <i class="fas fa-eye" style="color: rgb(44, 44, 245);"></i>
+                </a>
+              </div>
+              <div class="col-4">
+                <a class="action-delete" data-id="${row.id}">
+                  <i class="fas fa-trash" style="color: rgb(255, 72, 48);"></i>
+                </a>
+              </div>
+            </div>`
+      }
+    ]
+
     this.messageService.currentMessage.subscribe(message => {
       if (message) {
         this.successMsg = message;
+        // Efface le message automatiquement après 4s
+        setTimeout(() => {
+          this.successMsg = null;
+          this.cdr.detectChanges();
+        }, 4000);
       }
     });
 
-    this.dtoptions = { ...this.dataTableConfig.dtOptionsConfig() };
     this.getIncidents();
   }
 
   getIncidents(): void {
+    // Fetch data from service
     this.incidentService.getIncidents().subscribe({
-      next: (incidents: Incident[]) => {
-        const incidentsNonAffecte = this.incidentNonAffecte(incidents);
-        this.incidents = this.disableIncident(incidentsNonAffecte);
-
-        if (this.dtElement?.dtInstance) {
-          this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
-            dtInstance.destroy();
-            this.dtTrigger.next(null);
-          });
-        } else {
-          this.dtTrigger.next(null);
-        }
+      next: (data) => {
+        const filtered = this.disableIncident(data);
+        this.incidents = this.incidentNonAffecte(filtered);
+        // Update DataTable after data is fetched
+        this.updateTable();
       },
-      error: error => alert(error.message)
+      error: (err) => {
+        console.error('Error fetching incidents:', err);
+      }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    // Trigger initial DataTable rendering
+    this.dtTrigger.next(null);
+
+    // Bind action events using Angular Renderer2
+    this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
+      const tableElement = document.querySelector('#dataTable');
+      if (tableElement) {
+        // Handle update action
+        this.renderer.listen(tableElement, 'click', (event: { target: HTMLElement; }) => {
+          const target = event.target as HTMLElement;
+          if (target.closest('.action-update')) {
+            const id = target.closest('.action-update')?.getAttribute('data-id');
+            const incident = this.incidents.find((inc) => inc.id === Number(id));
+            this.canHide(incident!, 'updateStatusModal');
+          }
+          if (target.closest('.action-view')) {
+            const id = target.closest('.action-view')?.getAttribute('data-id');
+            this.router.navigate(['/detailsIncident'], { queryParams: { id } });
+          }
+          if (target.closest('.action-delete')) {
+            const id = target.closest('.action-delete')?.getAttribute('data-id');
+            this.canHide(Number(id), 'disableUserModal');
+          }
+        });
+      }
+    });
+  }
+
+  // Update DataTable with fetched data
+  updateTable(): void {
+    this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
+      dtInstance.clear(); // Clear existing rows
+      dtInstance.rows.add(this.incidents); // Add new data
+      dtInstance.draw(); // Redraw table
     });
   }
 
@@ -84,11 +159,12 @@ export class NonAffecteComponent implements OnInit {
       if (idOrStatus.id != null) {
         this.incidentUpdateStatus.id = idOrStatus.id;
       } else {
-        console.warn('Incident without ID:', idOrStatus);
+        console.warn('Incident sans ID:', idOrStatus);
         return;
       }
 
       this.incident = idOrStatus; // Pour mise à jour de message utilisateur plus tard
+
     }
 
     this.triggerModal(target);
@@ -118,12 +194,11 @@ export class NonAffecteComponent implements OnInit {
       this.incidentService.updateStatus(this.incidentUpdateStatus).subscribe({
         next: () => {
           const username = this.incident?.client?.username ?? '[client inconnu]';
-          const status = this.incident?.status ?? '[statut inconnu]';
+          const status = this.newStatus ?? '[statut inconnu]';
           this.messageService.setMessage(`Le statut de l'incident posté par le client '${username}' a bien été '${status}'`);
           this.getIncidents();
         },
-        error: error => alert(error.message),
-        complete: () => console.log("Incident après modification:", this.incident),
+        error: error => alert(error.message)
       });
     }
   }
@@ -142,23 +217,16 @@ export class NonAffecteComponent implements OnInit {
     }
   }
 
-  resetForm(): void {
-    this.incident = { status: '' };
-  }
-
   disableIncident(incidents: Incident[]): Incident[] {
-    return incidents.filter(incident => incident.active);
+    return incidents.filter(incident => incident.active);;
   }
 
   incidentNonAffecte(incidents: Incident[]): Incident[] {
-    return this.incidents.filter(incident => incident.typeCas?.destination?.name?.toUpperCase() === 'AUCUNE CORRESPONDACE');
-  }
-
-  isArray<T>(value: any): value is T[] {
-    return Array.isArray(value);
+    return incidents.filter(incident => incident.typeCas?.destination?.name?.toUpperCase() === 'AUCUNE CORRESPONDACE');
   }
 
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
   }
+
 }

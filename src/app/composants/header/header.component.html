@@ -1,5 +1,5 @@
 @if (this.currentUrl !== `/orgExterne?id=${id_destination}` ) {
-    <nav class="navbar navbar-expand px-3 border-bottom shadow" style="background-color: #fff;">
+    <nav class="navbar fixed-nav navbar-expand px-3 border-bottom shadow" style="background-color: #fff;">
         <button class="btn" id="sidebar-toggle" type="button">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -16,7 +16,7 @@
         </div>
     </nav>
 }@else {
-    <nav class="navbar navbar-expand px-3 border-bottom shadow bg-primary bg-gradient">
+    <nav class="navbar fixed-nav navbar-expand px-3 border-bottom shadow bg-primary bg-gradient">
         <a class="ms-4 lh-base text-white" routerLink="/tableBord">Accueil</a>
         <div class="navbar-collapse navbar">
             <ul class="navbar-nav">

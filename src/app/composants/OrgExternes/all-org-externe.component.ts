@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Config } from 'datatables.net';
 import { Subject } from 'rxjs';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -38,10 +38,38 @@ export class AllOrgExterneComponent implements OnInit, OnDestroy {
     private OrgExterneService: OrgExterneService,
     private messageService: MessageService,
     private dataTableConfig: DataTableConfiService,
+    private renderer: Renderer2,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
+    this.dtoptions = { ...this.dataTableConfig.dtOptionsConfig() };
+    this.dtoptions.columns = [
+      {
+        data: 'image',
+        title: 'photo de profile',
+        render: (data: any, type: any, row: any) => `
+          <img src="${row.image}" alt="" width="45" height="45" class="rounded-circle">
+        ` 
+      },
+      { data: 'name', title: 'Type de l\'organisme' },
+      { data: 'idDestination', title: 'ID'},
+      {
+        data: null,
+        title: 'Actions',
+        orderable: false,
+        render: (data: any, type: any, row: any) => `
+                <div class="row">
+                  <div class="col-4"></div>
+                  <div class="col-4">
+                    <a class="action-delete" data-id="${row.idDestination}">
+                      <i class="fas fa-trash" style="color: rgb(255, 72, 48);"></i>
+                    </a>
+                  </div>
+                  <div class="col-4"></div>
+                </div>`
+      }
+    ]
     this.messageService.currentMessage.subscribe({
       next: message => {
         this.successMessage = message;
@@ -52,7 +80,6 @@ export class AllOrgExterneComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.dtoptions = { ...this.dataTableConfig.dtOptionsConfig() };
     this.getOrgExternes();
   }
 
@@ -60,19 +87,41 @@ export class AllOrgExterneComponent implements OnInit, OnDestroy {
     this.OrgExterneService.getOrgExternes().subscribe({
       next: (orgExternes: OrgExterne[]) => {
         this.orgExternes = this.disableOrganisme(orgExternes);
-
-        if (this.dtElement.dtInstance) {
-          this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
-            dtInstance.destroy();
-            this.dtTrigger.next(null);
-          });
-        } else {
-          this.dtTrigger.next(null);
-        }
+        // Update DataTable after data is fetched
+        this.updateTable();
       },
       error: error => {
         alert(error.message);
       }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    // Trigger initial DataTable rendering
+    this.dtTrigger.next(null);
+
+    // Bind action events using Angular Renderer2
+    this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
+      const tableElement = document.querySelector('#dataTable');
+      if (tableElement) {
+        // Handle update action
+        this.renderer.listen(tableElement, 'click', (event: { target: HTMLElement; }) => {
+          const target = event.target as HTMLElement;
+          if (target.closest('.action-delete')) {
+            const id = target.closest('.action-delete')?.getAttribute('data-id');
+            this.canHide(Number(id), 'hideOrganisme');
+          }
+        });
+      }
+    });
+  }
+
+  // Update DataTable with fetched data
+  updateTable(): void {
+    this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
+      dtInstance.clear(); // Clear existing rows
+      dtInstance.rows.add(this.orgExternes); // Add new data
+      dtInstance.draw(); // Redraw table
     });
   }
 
@@ -91,9 +140,9 @@ export class AllOrgExterneComponent implements OnInit, OnDestroy {
     this.OrgExterneService.addOrgExterne(this.orgExterne).subscribe({
       next: () => {
         this.messageService.setMessage("L'organisme externe '" + this.orgExterne.name + "' a bien été ajouté.");
+        this.resetForm();
         this.getOrgExternes();
         document.getElementById('add-close')?.click();
-        this.resetForm();
       },
       error: () => {
         this.errorMessage = "Une erreur s'est produite lors de la création de l'organisme.";
@@ -142,7 +191,7 @@ export class AllOrgExterneComponent implements OnInit, OnDestroy {
     button.type = 'button';
     button.style.display = 'none';
     button.setAttribute('data-bs-toggle', 'modal');
-    button.setAttribute('data-bs-target', '#' + target);
+    button.setAttribute('data-bs-target', `#${target}`);
     div?.appendChild(button);
     button.click();
     button.remove();

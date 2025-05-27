@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Config } from 'datatables.net';
 import { Subject } from 'rxjs';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -17,7 +17,7 @@ import { MessageService } from '../../services/messages-service/message.service'
   templateUrl: './all-types-cas.component.html',
   styleUrl: './all-types-cas.component.css'
 })
-export class AllTypesCasComponent implements OnInit, OnDestroy {
+export class AllTypesCasComponent implements OnInit, OnDestroy, AfterViewInit {
   title = 'Tableau des Types de Cas';
   id!: number;
   trash = faTrash;
@@ -43,10 +43,32 @@ export class AllTypesCasComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private orgExterneService: OrgExterneService,
     private dataTableConfig: DataTableConfiService,
+    private renderer: Renderer2,
     private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
+    this.dtoptions = this.dataTableConfig.dtOptionsConfig();
+    this.dtoptions.columns = [
+      { data: 'id_cas', title: 'ID' },
+      { data: 'type', title: 'Type de cas' },
+      { data: 'destination.name', title: 'Organisme externe' },
+      {
+        data: null,
+        title: 'Actions',
+        orderable: false,
+        render: (data: any, type: any, row: any) => `
+                <div class="row">
+                  <div class="col-4"></div>
+                  <div class="col-4">
+                    <a class="action-delete" data-id="${row.id}">
+                      <i class="fas fa-trash" style="color: rgb(255, 72, 48);"></i>
+                    </a>
+                  </div>
+                  <div class="col-4"></div>
+                </div>`
+      }
+    ];
     this.messageService.currentMessage.subscribe({
       next: message => {
         this.successMessage = message;
@@ -58,7 +80,6 @@ export class AllTypesCasComponent implements OnInit, OnDestroy {
 
     });
 
-    this.dtoptions = this.dataTableConfig.dtOptionsConfig();
     this.getTypesCas();
     this.getOrgExternes();
   }
@@ -66,20 +87,22 @@ export class AllTypesCasComponent implements OnInit, OnDestroy {
   getTypesCas(): void {
     this.typeCasService.getTypesCas().subscribe({
       next: (typesCas: TypeCas[]) => {
-        this.typesCas = typesCas;
-
-        if (this.dtElement.dtInstance) {
-          this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
-            dtInstance.destroy();
-            this.dtTrigger.next(null);
-          });
-        } else {
-          this.dtTrigger.next(null);
-        }
+        this.typesCas = this.disableTypeCas(typesCas);
+        // Update DataTable after data is fetched
+        this.updateTable();
       },
-      error: error => {
+      error: () => {
         this.errorMessage = 'Erreur lors du chargement des types de cas.';
       }
+    });
+  }
+
+  // Update DataTable with fetched data
+  updateTable(): void {
+    this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
+      dtInstance.clear(); // Clear existing rows
+      dtInstance.rows.add(this.typesCas); // Add new data
+      dtInstance.draw(); // Redraw table
     });
   }
 
@@ -88,8 +111,28 @@ export class AllTypesCasComponent implements OnInit, OnDestroy {
       next: orgExternes => {
         this.orgExternes = orgExternes;
       },
-      error: error => {
+      error: () => {
         this.errorMessage = 'Erreur lors du chargement des organismes externes.';
+      }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    // Trigger initial DataTable rendering
+    this.dtTrigger.next(null);
+
+    // Bind action events using Angular Renderer2
+    this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
+      const tableElement = document.querySelector('#dataTable');
+      if (tableElement) {
+        // Handle update action
+        this.renderer.listen(tableElement, 'click', (event: { target: HTMLElement; }) => {
+          const target = event.target as HTMLElement;
+          if (target.closest('.action-delete')) {
+            const id = target.closest('.action-delete')?.getAttribute('data-id');
+            this.canHide(Number(id), 'hideTypeCas');
+          }
+        });
       }
     });
   }
@@ -108,9 +151,9 @@ export class AllTypesCasComponent implements OnInit, OnDestroy {
     this.typeCasService.addTypeCas(this.typeCas).subscribe({
       next: () => {
         this.messageService.setMessage(`Le type de cas '${this.typeCas.type}' a bien été ajouté.`);
+        this.resetForm();
         this.getTypesCas();
         document.getElementById('add-close')?.click();
-        this.resetForm();
       },
       error: error => {
         this.errorMessage = "Erreur lors de l'ajout du type de cas.";
@@ -144,8 +187,8 @@ export class AllTypesCasComponent implements OnInit, OnDestroy {
     });
   }
 
-  disableTypeCas(): TypeCas[] {
-    return this.typesCas.filter(cas => cas.active);
+  disableTypeCas(typesCas: TypeCas[]): TypeCas[] {
+    return typesCas.filter(cas => cas.active);
   }
 
   resetForm(): void {

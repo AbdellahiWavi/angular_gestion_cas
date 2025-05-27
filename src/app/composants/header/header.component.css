@@ -1,13 +1,12 @@
-
 .navbar-expand .navbar-nav {
-margin-left: auto;
+    margin-left: auto;
 }
 
 .main .navbar-nav .navbar-item a {
-font-size: .8rem;
+    font-size: .8rem;
 }
 
-nav.navbar.navbar-expand.px-3.border-bottom.mb-4.shadow {
+.fixed-nav {
     position: fixed;
     top: 0;
     right: 0;

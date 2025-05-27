@@ -18,7 +18,6 @@ export class DataTableConfiService {
       pagingType: 'full_numbers',
       pageLength: 5,
       lengthChange: false,
-      processing: true,          // Indique qu’un traitement est en cours (affiche un spinner)
       serverSide: false,         // false : les données sont chargées côté client (depuis l'API)
       destroy: true,             // Permet de détruire proprement l'instance avant de réinitialiser
       retrieve: true,            // Récupère l’instance existante si déjà initialisée
@@ -28,8 +27,10 @@ export class DataTableConfiService {
         {
           targets: '_all',
           className: 'dt-center'
-        }
-      ]
+        },
+
+      ],
+      columns: [],
     };
   }
 

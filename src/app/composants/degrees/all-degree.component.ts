@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Config } from 'datatables.net';
 import { Subject } from 'rxjs';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -15,7 +15,7 @@ import { MessageService } from '../../services/messages-service/message.service'
   templateUrl: './all-degree.component.html',
   styleUrls: ['./all-degree.component.css']
 })
-export class AllDegreeComponent implements OnInit, OnDestroy {
+export class AllDegreeComponent implements OnInit, OnDestroy, AfterViewInit {
   title = 'Tableau des degrees';
   degrees: Degree[] = [];
   degree: Degree = { type_degree: '' };
@@ -27,22 +27,43 @@ export class AllDegreeComponent implements OnInit, OnDestroy {
   successMessage: string | string[] | null = '';
   errorMessage = '';
 
-  trashIcon = faTrash;
-
-  @ViewChild(DataTableDirective, { static: false })
+  @ViewChild(DataTableDirective)
   dtElement!: DataTableDirective;
 
   constructor(
     private degreeService: DegreeService,
     private messageService: MessageService,
     private dataTableConfig: DataTableConfiService,
+    private renderer: Renderer2,
     private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
-    this.messageService.currentMessage.subscribe({
-      next: message => {
+    this.dtOptions = this.dataTableConfig.dtOptionsConfig();
+    this.dtOptions.columns = [
+      { data: 'id', title: 'ID' },
+      { data: 'type_degree', title: 'Type de degree' },
+      {
+        data: null,
+        title: 'Actions',
+        orderable: false,
+        render: (data: any, type: any, row: any) => `
+                <div class="row">
+                  <div class="col-4"></div>
+                  <div class="col-4">
+                    <a class="action-delete" data-id="${row.id}">
+                      <i class="fas fa-trash" style="color: rgb(255, 72, 48);"></i>
+                    </a>
+                  </div>
+                  <div class="col-4"></div>
+                </div>`
+      }
+    ]
+
+    this.messageService.currentMessage.subscribe(message => {
+      if (message) {
         this.successMessage = message;
+        // Efface le message automatiquement après 4s
         setTimeout(() => {
           this.successMessage = null;
           this.cdr.detectChanges();
@@ -50,25 +71,49 @@ export class AllDegreeComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.dtOptions = this.dataTableConfig.dtOptionsConfig();
-    this.loadDegrees();
+    this.getDegrees();
   }
 
-  loadDegrees(): void {
+  getDegrees(): void {
+    // Fetch data from service
     this.degreeService.getDegrees().subscribe({
-      next: (degrees: Degree[]) => {
-        this.degrees = this.deactvateDegrees(degrees);
-
-        if (this.dtElement?.dtInstance) {
-          this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
-            dtInstance.destroy();
-            this.dtTrigger.next(null);
-          });
-        } else {
-          this.dtTrigger.next(null);
-        }
+      next: (data) => {
+        this.degrees = this.deactvateDegrees(data);
+        // Update DataTable after data is fetched
+        this.updateTable();
       },
-      error: error => alert(error.message)
+      error: (err) => {
+        console.error('Error fetching degrees:', err);
+      }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    // Trigger initial DataTable rendering
+    this.dtTrigger.next(null);
+
+    // Bind action events using Angular Renderer2
+    this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
+      const tableElement = document.querySelector('#dataTable');
+      if (tableElement) {
+        // Handle update action
+        this.renderer.listen(tableElement, 'click', (event: { target: HTMLElement; }) => {
+          const target = event.target as HTMLElement;
+          if (target.closest('.action-delete')) {
+            const id = target.closest('.action-delete')?.getAttribute('data-id');
+            this.canHide(Number(id), 'hideDegree');
+          }
+        });
+      }
+    });
+  }
+
+  // Update DataTable with fetched data
+  updateTable(): void {
+    this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
+      dtInstance.clear(); // Clear existing rows
+      dtInstance.rows.add(this.degrees); // Add new data
+      dtInstance.draw(); // Redraw table
     });
   }
 
@@ -82,7 +127,7 @@ export class AllDegreeComponent implements OnInit, OnDestroy {
       next: () => {
         this.messageService.setMessage(`Le degree '${this.degree.type_degree}' a bien été ajouté`);
         this.resetForm();
-        this.loadDegrees();
+        this.getDegrees();
         document.getElementById('add-close')?.click();
       },
       error: error => {
@@ -91,7 +136,7 @@ export class AllDegreeComponent implements OnInit, OnDestroy {
     });
   }
 
-  prepareDeactivate(id: number, modalId: string): void {
+  canHide(id: number, modalId: string): void {
     this.idToDeactivate = id;
 
     const button = document.createElement('button');
@@ -110,7 +155,7 @@ export class AllDegreeComponent implements OnInit, OnDestroy {
     this.degreeService.disableDegree(this.idToDeactivate).subscribe({
       next: () => {
         this.successMessage = 'Le degree a bien été désactivé';
-        this.loadDegrees();
+        this.getDegrees();
       },
       error: error => alert(error.message)
     });

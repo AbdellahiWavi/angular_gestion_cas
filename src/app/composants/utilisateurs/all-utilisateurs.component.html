@@ -19,46 +19,18 @@
                 Ajouter
             </button>
             <div class="table-responsive">
-                <table class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger"
+                <table id="dataTable" class="table table-striped" datatable [dtOptions]="dtoptions" [dtTrigger]="dtTrigger" #dtElement
                     width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>username</th>
-                            <th>email</th>
-                            <th>role</th>
+                            <th>Nom complet</th>
+                            <th>E-mail</th>
+                            <th>Roles et Profils</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @for (gestionnaire of gestionnaires; track $index) {
-                        <tr>
-                            <td>{{gestionnaire.id}}</td>
-                            <td>{{gestionnaire.username}}</td>
-                            <td>{{gestionnaire.email}}</td>
-                            <td>
-                                @for (role of gestionnaire.roles; track role.id) {
-                                {{role.role}}
-                                }
-                            </td>
-                            <td>
-                                <div class="row">
-                                    <div class="col-4">
-                                        <a (click)="canHide(gestionnaire, 'updateRoleModal')">
-                                            <fa-icon [icon]="pen"
-                                                style="color: rgb(86, 239, 96); display: inline;"></fa-icon>
-                                        </a>
-                                    </div>
-                                    <div class="col-4">
-                                        <a (click)="canHide(gestionnaire.id!, 'hideIncident')">
-                                            <fa-icon [icon]="trash" style="color: rgb(255, 72, 48);"></fa-icon>
-                                        </a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        }
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
             <!-- Add user Modal -->

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Config } from 'datatables.net';
 import { Subject } from 'rxjs';
 import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +10,7 @@ import { Role } from '../../../gs-api/roles/role';
 import { WithRoleService } from '../../../gs-api/roles/role-service/with-role.service';
 import { DataTableConfiService } from '../../services/dataTableConfig/data-table-confi.service';
 import { MessageService } from '../../services/messages-service/message.service';
+import { data } from 'jquery';
 
 @Component({
   selector: 'all-utilisateurs',
@@ -17,17 +18,12 @@ import { MessageService } from '../../services/messages-service/message.service'
   templateUrl: './all-utilisateurs.component.html',
   styleUrls: ['./all-utilisateurs.component.css']
 })
-export class AllUtilisateursComponent implements OnInit, OnDestroy {
-
+export class AllUtilisateursComponent implements OnInit, OnDestroy, AfterViewInit {
   title = 'Tableau des utilisateurs';
   successMsg: string | string[] | null = '';
   errorMsg: string[] = [];
 
-  eye = faEye;
-  pen = faPen;
-  trash = faTrash;
-
-  id!: number;
+  id: number | null = null;
   gestionnaires: Gestionnaire[] = [];
   gestionnaire: Gestionnaire = {};
   roles: Role[] = [];
@@ -45,10 +41,45 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy {
     private dataTableConfig: DataTableConfiService,
     private gestionnaireService: GsServiceService,
     private roleService: WithRoleService,
+    private renderer: Renderer2,
     private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
+    this.dtoptions = this.dataTableConfig.dtOptionsConfig();
+    this.dtoptions.columns = [
+      { data: 'id', title: 'ID' },
+      { data: 'username', title: 'Nom complet' },
+      { data: 'email', title: 'E-mail' },
+      {
+        data: 'roles',
+        title: 'Roles et Profils',
+        render: (data: any, type: any, row: any) => {
+          if (Array.isArray(data)) {
+            return data.map((r: any) => `${r.role}-${r.profile}`).join(', ');
+          }
+          return '';
+        }
+      },
+      {
+        data: null,
+        title: 'Actions',
+        orderable: false,
+        render: (data: any, type: any, row: any) => `
+                <div class="row">
+                  <div class="col-6">
+                    <a class="action-update" data-id="${row.id}">
+                      <i class="fas fa-pen" style="color: rgb(86, 239, 96);"></i>
+                    </a>
+                  </div>
+                  <div class="col-6">
+                    <a class="action-delete" data-id="${row.id}">
+                      <i class="fas fa-trash" style="color: rgb(255, 72, 48);"></i>
+                    </a>
+                  </div>
+                </div>`
+      }
+    ];
     this.messageService.currentMessage.subscribe({
       next: message => {
         if (message) this.successMsg = message;
@@ -59,7 +90,6 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.dtoptions = this.dataTableConfig.dtOptionsConfig();
     this.getUsers();
     this.getRoles();
   }
@@ -68,18 +98,43 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy {
     this.gestionnaireService.getUsers().subscribe({
       next: (response: Gestionnaire[]) => {
         this.gestionnaires = this.disableIncident(response);
-
-        if (this.dtElement.dtInstance) {
-          this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
-            dtInstance.destroy();
-            this.dtTrigger.next(null);
-          });
-        } else {
-          this.dtTrigger.next(null);
-        }
+        this.updateTable();
       },
       error: error => {
         this.errorMsg = [error.error?.message || "Erreur lors du chargement des utilisateurs."];
+      }
+    });
+  }
+
+  // Update DataTable with fetched data
+  updateTable(): void {
+    this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
+      dtInstance.clear(); // Clear existing rows
+      dtInstance.rows.add(this.gestionnaires); // Add new data
+      dtInstance.draw(); // Redraw table
+    });
+  }
+
+  ngAfterViewInit(): void {
+    // Trigger initial DataTable rendering
+    this.dtTrigger.next(null);
+
+    // Bind action events using Angular Renderer2
+    this.dtElement.dtInstance.then((dtInstance: dt.Api) => {
+      const tableElement = document.querySelector('#dataTable');
+      if (tableElement) {
+        // Handle update action
+        this.renderer.listen(tableElement, 'click', (event: { target: HTMLElement; }) => {
+          const target = event.target as HTMLElement;
+          if (target.closest('.action-delete')) {
+            const id = target.closest('.action-delete')?.getAttribute('data-id');
+            this.canHide(Number(id), 'hideIncident');
+          }
+          if (target.closest('.action-update')) {
+            const id = target.closest('.action-update')?.getAttribute('data-id');
+            this.canHide(Number(id), 'updateRoleModal');
+          }
+        });
       }
     });
   }
@@ -111,9 +166,9 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy {
     this.gestionnaireService.addUser(this.gestionnaire).subscribe({
       next: () => {
         this.messageService.setMessage(`L'utilisateur '${username}' a été créé avec succès.`);
+        this.resetForm();
         this.getUsers();
         document.getElementById('add-close')?.click();
-        this.resetForm();
       },
       error: () => {
         this.errorMsg.push("Erreur lors de la création de l'utilisateur.");
@@ -141,9 +196,8 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy {
 
     this.gestionnaireService.updateUser(this.gestionnaire).subscribe({
       next: () => {
-        //this.messageService.addMessage(messages);
-        this.getUsers();
         this.resetForm();
+        this.getUsers();
       },
       error: error => {
         this.errorMsg = [error.error?.message || "Erreur lors de la mise à jour de l'utilisateur."];
@@ -154,7 +208,7 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy {
   hideUser(): void {
     document.getElementById('close')?.click();
 
-    this.gestionnaireService.disableUser(this.id).subscribe({
+    this.gestionnaireService.disableUser(this.id!).subscribe({
       next: () => {
         this.successMsg = "L'utilisateur a bien été supprimé.";
         this.getUsers();
@@ -184,7 +238,7 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy {
   }
 
   disableIncident(users: Gestionnaire[]): Gestionnaire[] {
-    return users.filter(gestionnaire => gestionnaire.active);
+    return users.filter(g => g.active);
   }
 
   resetForm(): void {

@@ -19,7 +19,7 @@ export class ServiceClientService {
     return this.http.get<Client[]>(`${this.apiServiceUrl}/client/all`);
   }
   
-  disableClient(ClientId?: number): Observable<void> {
+  disableClient(ClientId: number): Observable<void> {
     return this.http.put<void>(`${this.apiServiceUrl}/client/isActive/${ClientId}`, {});
   }
 
