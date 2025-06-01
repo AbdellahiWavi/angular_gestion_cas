@@ -37,7 +37,7 @@ export class PageInscriptionComponent implements OnInit {
         this.roles = roles;
       },
       error: error => {
-        alert(error);
+        alert(`erreur du recuperation de gestionnaire: ${error}`);
       }
     });
   }

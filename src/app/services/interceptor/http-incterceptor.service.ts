@@ -5,7 +5,6 @@ import { AuthenticationResponse } from '../user/authenticationResponse';
 import { Router } from '@angular/router';
 import { LoaderService } from '../../composants/loader/service/loader.service';
 import { tap } from 'rxjs/operators';
-import { MessageService } from '../messages-service/message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,14 +13,13 @@ export class HttpInterceptorService implements HttpInterceptor {
 
   constructor(
     private router: Router,
-    private loaderService: LoaderService,
-    private messageService: MessageService
+    private loaderService: LoaderService
   ) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     this.loaderService.show();
-    let authenticationResponse: AuthenticationResponse = {};
-    const token = localStorage.getItem('accessToken');
+    let authenticationResponse: AuthenticationResponse;
+    const userAuth = localStorage.getItem('userAuth');
 
     req = req.clone({
       headers: new HttpHeaders({
@@ -29,9 +27,9 @@ export class HttpInterceptorService implements HttpInterceptor {
       })
     });
 
-    if (token && !this.isTokenExpired(token)) {
+    if (userAuth && !this.isTokenExpired(userAuth)) {
       authenticationResponse = JSON.parse(
-        token as string
+        userAuth as string
       );
 
       const authReq = req.clone({
@@ -42,7 +40,7 @@ export class HttpInterceptorService implements HttpInterceptor {
       });
       return this.handleRequest(authReq, next);
     } else {
-      if (token) {
+      if (userAuth) {
         localStorage.removeItem('accessToken');
       }
       this.router.navigate(['/login']);
@@ -51,7 +49,15 @@ export class HttpInterceptorService implements HttpInterceptor {
   }
 
 
-  isTokenExpired(token: string): boolean {
+  isTokenExpired(userAuth: string): boolean {
+    let authenticationResponse: AuthenticationResponse;
+
+    authenticationResponse = JSON.parse(
+      userAuth as string
+    );
+
+    const token = authenticationResponse.accessToken;
+
     if (!token) return true;
 
     const payload = token.split('.')[1];

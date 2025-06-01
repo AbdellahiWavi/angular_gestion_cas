@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { faClipboardList, faGenderless, faList, faSquareArrowUpRight, faTriangleExclamation, faUser } from '@fortawesome/free-solid-svg-icons';
 import { NavigationEnd, Router } from '@angular/router';
 import { Menu } from './menu';
+import { ServiceLoginService } from '../../services/user/login/service-login.service';
 
 @Component({
   selector: 'app-menu',
@@ -9,8 +10,8 @@ import { Menu } from './menu';
   templateUrl: './menu.component.html',
   styleUrl: './menu.component.css'
 })
-export class MenuComponent {
-  
+export class MenuComponent implements OnInit {
+  userRole: string | null = null;
   currentUrl = '';
   currentNavigation?: Promise<boolean>;
 
@@ -19,6 +20,7 @@ export class MenuComponent {
       id: '1',
       titre: 'Incidents',
       icon: faList,
+      userRole: ['ADMIN', 'USER', 'RESPONSABLE'],
       sousMenu: [
         {
           id: '12',
@@ -38,6 +40,7 @@ export class MenuComponent {
       id: '2',
       titre: 'Degrees',
       icon: faTriangleExclamation,
+      userRole: ['ADMIN', 'USER', 'RESPONSABLE'],
       sousMenu: [
         {
           id: '21',
@@ -51,6 +54,7 @@ export class MenuComponent {
       id: '3',
       titre: 'Organisme Externe',
       icon: faSquareArrowUpRight,
+      userRole: ['ADMIN'],
       sousMenu: [
         {
           id: '31',
@@ -64,6 +68,7 @@ export class MenuComponent {
       id: '4',
       titre: 'Type Cas',
       icon: faClipboardList,
+      userRole: ['ADMIN', 'USER', 'RESPONSABLE'],
       sousMenu: [
         {
           id: '41',
@@ -77,6 +82,7 @@ export class MenuComponent {
       id: '5',
       titre: 'Roles',
       icon: faGenderless,
+      userRole: ['ADMIN'],
       sousMenu: [
         {
           id: '51',
@@ -90,6 +96,7 @@ export class MenuComponent {
       id: '6',
       titre: 'Clients',
       icon: faUser,
+      userRole: ['ADMIN'],
       sousMenu: [
         {
           id: '61',
@@ -103,6 +110,7 @@ export class MenuComponent {
       id: '7',
       titre: 'Utilisateurs et roles',
       icon: faUser,
+      userRole: ['ADMIN'],
       sousMenu: [
         {
           id: '71',
@@ -114,12 +122,16 @@ export class MenuComponent {
     },
   ];
 
-  constructor (private router: Router) {
+  constructor (private router: Router, private authService: ServiceLoginService ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.currentUrl = event.url;
       }
     });
+  }
+
+  ngOnInit(): void {
+    this.userRole = this.authService.getUserRole();
   }
 
   navigate(url?: string): void {

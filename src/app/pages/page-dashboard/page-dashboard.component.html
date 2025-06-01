@@ -3,10 +3,10 @@
         <div class="h-100">
             <div class="sidebar-logo">
                 <img src="assets/images/author_logo.jpg">
-                <h4 >LISAMA-ADMIN</h4>
+                <h4 >LISAMA-{{role}}</h4>
             </div>
             <ul class="sidebar-nav shadow">
-                <div class="input-group mx-auto mb-3 shadow" style="width: 85%!important;">
+                <div class="input-group mx-auto mb-4 shadow" style="width: 85%!important;">
                     <input type="text" class="form-control bg-primary rounded-1 just-sidebar" placeholder="Search" aria-label="Username" aria-describedby="basic-addon1">
                     <span class="input-group-text rounded-1 bg-primary just-sidebar" id="basic-addon1"><fa-icon [icon]="faMagnifyingGlass"></fa-icon></span>
                 </div>
@@ -21,8 +21,8 @@
         </div>
     </aside>
     <div class="main">
-        <app-header></app-header>
         <app-loader></app-loader>
+        <app-header></app-header>
         <router-outlet />
     </div>
 </div>

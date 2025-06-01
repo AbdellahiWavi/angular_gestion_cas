@@ -1,4 +1,5 @@
-<li class="sidebar-item" *ngFor="let menu of menuProperties">
+@for (menu of menuProperties; track $index) {
+<li class="sidebar-item" *ngIf="menu.userRole?.includes(userRole!)">
     <a class="sidebar-link" data-bs-toggle = "collapse" [attr.data-bs-target]="'#' + menu.id" [attr.aria-controls]="menu.titre"
         aria-expanded="false">
         <fa-icon [icon]="menu.icon" class="pe-2"></fa-icon>&nbsp;
@@ -12,3 +13,5 @@
         </div>
     </div>
 </li>
+}
+

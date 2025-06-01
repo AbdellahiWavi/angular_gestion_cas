@@ -31,12 +31,34 @@ export class ServiceLoginService implements OnInit {
     );
   }
 
-  setConnectedUser(authenticationResponse: any): void {
-    localStorage.setItem("accessToken", JSON.stringify(authenticationResponse));
+  firstLogin(): Observable<boolean> {
+    return this.http.get<boolean>(`${(this.gestionCasApi)}/users/exists`);
+  }
+
+  setConnectedUser(authenticationResponse: AuthenticationResponse): void {
+    localStorage.setItem("userAuth", JSON.stringify(authenticationResponse));
   }
 
   isLoggedUserAndAccessTokenValide(): boolean {
-    const token = localStorage.getItem('accessToken');
+    const userAuth = localStorage.getItem('userAuth');
+
+    if (!userAuth) {
+      this.router.navigate(['/login']);
+      return false;
+    }
+
+    let authenticationResponse: AuthenticationResponse;
+
+    try {
+      authenticationResponse = JSON.parse(userAuth);
+    } catch (e) {
+      console.error("Erreur de parsing JSON de l'objet userAuth", e);
+      localStorage.removeItem('userAuth');
+      this.router.navigate(['/login']);
+      return false;
+    }
+
+    const token = authenticationResponse.accessToken;
 
     if (!token) {
       this.router.navigate(['/login']);
@@ -47,12 +69,12 @@ export class ServiceLoginService implements OnInit {
       return true;
     }
 
-    this.messageService.setMessage("Le temps de connection est expirée :(.");
-    localStorage.removeItem('accessToken');
-
+    this.messageService.setMessage("Le temps de connexion est expiré :(");
+    localStorage.removeItem('userAuth');
     this.router.navigate(['/login']);
     return false;
   }
+
 
 
   isTokenExpired(token: string): boolean {
@@ -68,9 +90,32 @@ export class ServiceLoginService implements OnInit {
     return exp < now;
   }
 
+  getUserRole(): string | null {
+    let authenticationResponse: AuthenticationResponse;
+    let role = '';
+    const userAuth = localStorage.getItem('userAuth');
+    if (!userAuth) return null;
+
+    authenticationResponse = JSON.parse(
+      userAuth as string
+    );
+    const userRole = authenticationResponse.userInfo.role[0].authority;
+    const startIndex = userRole.indexOf("_");
+    if (startIndex !== -1) {
+      role = userRole.substring(startIndex + 1);
+    }
+
+    return role;
+  }
+
+  hasRole(allowedRoles: string[]): boolean {
+    const role = this.getUserRole();
+    return allowedRoles.includes(role ?? '');
+  }
+
   logout(): void {
     this.messageService.setMessage("vous avez déconnecter :(!");
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem('userAuth');
   }
 
 }

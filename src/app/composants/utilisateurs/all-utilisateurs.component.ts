@@ -97,11 +97,11 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy, AfterViewIni
   getUsers(): void {
     this.gestionnaireService.getUsers().subscribe({
       next: (response: Gestionnaire[]) => {
-        this.gestionnaires = this.disableIncident(response);
+        this.gestionnaires = this.disableUser(response);
         this.updateTable();
       },
-      error: error => {
-        this.errorMsg = [error.error?.message || "Erreur lors du chargement des utilisateurs."];
+      error: () => {
+        this.errorMsg = ["Erreur lors du chargement des utilisateurs."];
       }
     });
   }
@@ -132,7 +132,7 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy, AfterViewIni
           }
           if (target.closest('.action-update')) {
             const id = target.closest('.action-update')?.getAttribute('data-id');
-            this.canHide(Number(id), 'updateRoleModal');
+            this.canUpdate(Number(id), 'updateRoleModal');
           }
         });
       }
@@ -144,8 +144,8 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy, AfterViewIni
       next: (roles: Role[]) => {
         this.roles = roles;
       },
-      error: error => {
-        this.errorMsg = [error.error?.message || "Erreur lors du chargement des rôles."];
+      error: () => {
+        this.errorMsg = ["Erreur lors du chargement des rôles."];
       }
     });
   }
@@ -192,15 +192,14 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy, AfterViewIni
       role => `Le rôle '${role.role}' et le profil '${role.profile}' ont été modifiés.`
     );
 
-    this.successMsg = messages;
-
     this.gestionnaireService.updateUser(this.gestionnaire).subscribe({
       next: () => {
+        this.successMsg = messages;
         this.resetForm();
         this.getUsers();
       },
-      error: error => {
-        this.errorMsg = [error.error?.message || "Erreur lors de la mise à jour de l'utilisateur."];
+      error: () => {
+        this.errorMsg = ["Erreur lors de la mise à jour de l'utilisateur."];
       }
     });
   }
@@ -214,12 +213,14 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy, AfterViewIni
         this.getUsers();
       },
       error: error => {
-        this.errorMsg = [error.error?.message || "Erreur lors de la suppression de l'utilisateur."];
+        this.errorMsg = ["Erreur lors de la suppression de l'utilisateur."];
       }
     });
   }
 
-  canHide(idOrUser: number | Gestionnaire, target: string): void {
+  canHide(id: number, target: string): void {
+    this.id = id;
+
     const button = document.createElement('button');
     button.type = 'button';
     button.style.display = 'none';
@@ -228,16 +229,26 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy, AfterViewIni
     document.querySelector('.row')?.appendChild(button);
     button.click();
     button.remove();
-
-    if (typeof idOrUser === 'number') {
-      this.id = idOrUser;
-    } else {
-      this.gestionnaire = { ...idOrUser }; // copie défensive
-      this.tempRoles = idOrUser.roles ? idOrUser.roles.map(role => ({ ...role })) : [];
-    }
   }
 
-  disableIncident(users: Gestionnaire[]): Gestionnaire[] {
+  canUpdate(id: number, target: string): void {
+    this.gestionnaireService.getUser(id).subscribe({
+      next: (gestionnaire: Gestionnaire) => {
+        this.gestionnaire = gestionnaire;
+        this.tempRoles = gestionnaire.roles!;
+      }
+    });
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.style.display = 'none';
+    button.setAttribute('data-bs-toggle', 'modal');
+    button.setAttribute('data-bs-target', `#${target}`);
+    document.querySelector('.row')?.appendChild(button);
+    button.click();
+    button.remove();
+  }
+
+  disableUser(users: Gestionnaire[]): Gestionnaire[] {
     return users.filter(g => g.active);
   }
 

@@ -3,5 +3,6 @@ export interface Menu {
     titre?: string;
     icon?: any;
     url?: string;
+    userRole?: string[];
     sousMenu?: Array<Menu>
 }

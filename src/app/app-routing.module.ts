@@ -17,6 +17,7 @@ import { PageRoleComponent } from './pages/roles/page-role.component';
 import { PageAllTypesCasComponent } from './pages/typesCas/page-all-types-cas.component';
 import { PageAllUtilisateursComponent } from './pages/utilisateurs/page-all-utilisateurs.component';
 import { ApplicationGuardService } from './services/guard/application-guard.service';
+import { PageSignUpAdminComponent } from './pages/page-sign-up-admin/page-sign-up-admin.component';
 
 const routes: Routes = [
   {
@@ -24,8 +25,8 @@ const routes: Routes = [
     component: PageLoginComponent
   },
   {
-    path: 'signupAdmin',
-    component: PageInscriptionComponent
+    path: 'signUpAdmin',
+    component: PageSignUpAdminComponent
   },
   {
     path: '',
@@ -40,57 +41,68 @@ const routes: Routes = [
       {
         path: 'tableBord',
         component: TableBordComponent,
-        canActivate: [ApplicationGuardService]
+        canActivate: [ApplicationGuardService],
+        data: { roles: ['ADMIN', 'USER', 'RESPONSABLE'] }
       },
       {
         path: 'displayAllIncident',
         component: PageAllIncidentsComponent,
-        canActivate: [ApplicationGuardService]
+        canActivate: [ApplicationGuardService],
+        data: { roles: ['ADMIN', 'USER', 'RESPONSABLE'] }
       },
       {
         path: 'nonAffecte',
         component: PageNonAffecteComponent,
-        canActivate: [ApplicationGuardService]
+        canActivate: [ApplicationGuardService],
+        data: { roles: ['ADMIN', 'USER', 'RESPONSABLE'] }
       },
       {
         path: 'displayAllUser',
         component: PageAllUtilisateursComponent,
-        canActivate: [ApplicationGuardService]
+        canActivate: [ApplicationGuardService],
+        data: { roles: ['ADMIN'] }
       },
       {
         path: 'displayAllRoles',
         component: PageRoleComponent,
-        canActivate: [ApplicationGuardService]
+        canActivate: [ApplicationGuardService],
+        data: { roles: ['ADMIN'] }
       },
       {
         path: 'displayAllClients',
         component: PageAllClientsComponent,
-        canActivate: [ApplicationGuardService]
+        canActivate: [ApplicationGuardService],
+        data: { roles: ['ADMIN'] }
       },
       {
         path: 'displayAllDegrees',
         component: PageAllDegreeComponent,
-        canActivate: [ApplicationGuardService]
+        canActivate: [ApplicationGuardService],
+        data: { roles: ['ADMIN', 'USER', 'RESPONSABLE'] }
       },
       {
         path: 'displayAllOrgExternes',
         component: PageAllOrgExterneComponent,
-        canActivate: [ApplicationGuardService]
+        canActivate: [ApplicationGuardService],
+        data: { roles: ['ADMIN'] }
       },
       {
         path: 'displayAllTypesCas',
         component: PageAllTypesCasComponent,
-        canActivate: [ApplicationGuardService]
+        canActivate: [ApplicationGuardService],
+        data: { roles: ['ADMIN', 'USER', 'RESPONSABLE'] }
       },
       {
         path: 'incidentLocation',
         component: MapComponent,
-        canActivate: [ApplicationGuardService]
+        canActivate: [ApplicationGuardService],
+        data: { roles: ['ADMIN', 'USER', 'RESPONSABLE'] }
       },
       {
         path: 'detailsIncident',
         component: AfficherIncidentComponent,
-        canActivate: [ApplicationGuardService]
+        canActivate: [ApplicationGuardService],
+        data: { roles: ['ADMIN', 'USER', 'RESPONSABLE'] }
       },
       {
         path: 'logout',

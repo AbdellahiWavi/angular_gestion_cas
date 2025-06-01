@@ -39,7 +39,7 @@ export class PageLoginComponent {
             this.loginService.setConnectedUser(data);
             this.router.navigate(['tableBord']);
           },
-          error: (error) => {
+          error: () => {
             this.errorMsg = "Login et / ou mot de passe incorrecte";
           }
         });

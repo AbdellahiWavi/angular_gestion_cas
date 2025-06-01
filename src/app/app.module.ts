@@ -36,6 +36,7 @@ import { PageAllOrgExterneComponent } from './pages/OrgExternes/page-all-org-ext
 import { PageRoleComponent } from './pages/roles/page-role.component';
 import { PageAllTypesCasComponent } from './pages/typesCas/page-all-types-cas.component';
 import { PageAllUtilisateursComponent } from './pages/utilisateurs/page-all-utilisateurs.component';
+import { PageSignUpAdminComponent } from './pages/page-sign-up-admin/page-sign-up-admin.component';
 
 @NgModule({
   declarations: [
@@ -67,7 +68,8 @@ import { PageAllUtilisateursComponent } from './pages/utilisateurs/page-all-util
     AfficherIncidentComponent,
     LoaderComponent,
     PageLogoutComponent,
-    IncidentAffecteOrgExtComponent
+    IncidentAffecteOrgExtComponent,
+    PageSignUpAdminComponent
   ],
   imports: [
     BrowserModule,

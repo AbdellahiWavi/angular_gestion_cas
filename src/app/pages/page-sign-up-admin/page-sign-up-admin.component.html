@@ -1,0 +1,32 @@
+<div class="container my-container">
+    <div class="card text-center mx-auto shadow" style="width: 19rem;">
+        <div class="card-header">
+            <h3 class="card-title text-primary m-1">Bienvenu à LISAMA</h3>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-danger" *ngIf="errorMsg.length !== 0">
+                @for (message of errorMsg; track $index) {
+                <li style="list-style: disc;">{{message}}</li><br>
+                }
+            </div>
+            <h5 class="card-title mb-5">Ajouter un utilisateur</h5>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="username" placeholder="Username"
+                    [(ngModel)]="gestionnaire.username">
+                <label>Nom et Prénom</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" name="email" placeholder="E-mail"
+                    [(ngModel)]="gestionnaire.email">
+                <label>Adresse E-mail</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" name="password" placeholder="Password"
+                    [(ngModel)]="gestionnaire.password">
+                <label>Mot de passe</label>
+            </div>
+            <div class="mt-2 d-flex justify-content-between">
+                <button type="button" (click)="signUpAdmin()" class="btn btn-primary mx-auto">S'inscrire</button>
+            </div>
+        </div>
+    </div>

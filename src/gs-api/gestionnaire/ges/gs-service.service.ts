@@ -19,6 +19,10 @@ export class GsServiceService {
     return this.http.get<Gestionnaire[]>(`${this.gestionCasApi}/gestionnaire/all`);
   }
 
+  getUser(userId: number): Observable<Gestionnaire> {
+    return this.http.get<Gestionnaire>(`${this.gestionCasApi}/gestionnaire/find/${userId}`);
+  }
+
   addUser(user: Gestionnaire): Observable<void> {
     return this.http.post<void>(`${this.gestionCasApi}/gestionnaire/add`, user);
   }
