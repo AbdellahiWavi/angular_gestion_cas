@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Gestionnaire } from '../../../gs-api/gestionnaire/gestionnaire';
 import { SignUpAdminServiceService } from '../../../gs-api/adminService/sign-up-admin-service.service';
 import { Router } from '@angular/router';

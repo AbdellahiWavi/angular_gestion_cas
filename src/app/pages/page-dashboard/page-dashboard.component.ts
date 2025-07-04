@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faChevronUp, faHouse, faMagnifyingGlass, faRightFromBracket, faUserPlus } from '@fortawesome/free-solid-svg-icons';
-import { AuthenticationResponse } from '../../services/user/authenticationResponse';
+import { GsServiceService } from '../../../gs-api/gestionnaire/ges/gs-service.service';
 
 @Component({
   selector: 'page-dashboard',
@@ -12,7 +12,7 @@ import { AuthenticationResponse } from '../../services/user/authenticationRespon
 export class PageDashboardComponent implements OnInit {
 
   currentUrl = '';
-  role = '';
+  profile = '';
 
   faHouse = faHouse;
   faChevronUp = faChevronUp;
@@ -20,7 +20,10 @@ export class PageDashboardComponent implements OnInit {
   faUserPlus = faUserPlus;
   faMagnifyingGlass = faMagnifyingGlass;
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private gestionnaireService: GsServiceService
+  ) { }
 
   ngOnInit(): void {
     this.currentUrl = this.router.url;
@@ -28,19 +31,16 @@ export class PageDashboardComponent implements OnInit {
   }
 
   getRole() {
-    let authenticationResponse: AuthenticationResponse;
-    const userAuth = localStorage.getItem('userAuth');
-
-    authenticationResponse = JSON.parse(
-      userAuth as string
+    const userAuth = JSON.parse(
+      localStorage.getItem('userAuth') as string
     );
-    const userRole = authenticationResponse.userInfo.role[0].authority;
-    const startIndex = userRole.indexOf("_");
-    if (startIndex !== -1) {
-      this.role = userRole.substring(startIndex + 1);
-    }
 
+    const userId = userAuth.userInfo.id;
+    this.gestionnaireService.getUser(userId).subscribe({
+      next: (gestionnaire) => {
+        this.profile = `- ${gestionnaire.roles![0].profile!}`;
+      }
+    });
   }
-
 
 }

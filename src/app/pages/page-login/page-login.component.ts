@@ -3,6 +3,7 @@ import { ServiceLoginService } from '../../services/user/login/service-login.ser
 import { AuthenticationRequest } from '../../services/user/authenticationRequest';
 import { Router } from '@angular/router';
 import { MessageService } from '../../services/messages-service/message.service';
+import { getCurrentUser } from '../../services/fonctionUtils/get-current-user';
 
 @Component({
   selector: 'app-page-login',
@@ -14,8 +15,8 @@ export class PageLoginComponent {
 
   errorMsg = '';
   authenticationRequest: AuthenticationRequest = {};
-  
-  constructor (
+
+  constructor(
     private loginService: ServiceLoginService,
     private router: Router,
     private messageService: MessageService
@@ -40,7 +41,7 @@ export class PageLoginComponent {
             this.router.navigate(['tableBord']);
           },
           error: () => {
-            this.errorMsg = "Login et / ou mot de passe incorrecte";
+            this.errorMsg = "E-mail ou mot de passe incorrecte";
           }
         });
       } else {

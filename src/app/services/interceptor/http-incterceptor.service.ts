@@ -12,7 +12,6 @@ import { tap } from 'rxjs/operators';
 export class HttpInterceptorService implements HttpInterceptor {
 
   constructor(
-    private router: Router,
     private loaderService: LoaderService
   ) { }
 
@@ -35,15 +34,14 @@ export class HttpInterceptorService implements HttpInterceptor {
       const authReq = req.clone({
         headers: new HttpHeaders({
           Authorization: 'Bearer ' + authenticationResponse.accessToken,
-          'X-App-Type': 'WEB'
+          'X-App-Type': 'WEB',
         })
       });
       return this.handleRequest(authReq, next);
     } else {
       if (userAuth) {
-        localStorage.removeItem('accessToken');
+        localStorage.removeItem('userAuth');
       }
-      this.router.navigate(['/login']);
       return this.handleRequest(req, next);
     }
   }

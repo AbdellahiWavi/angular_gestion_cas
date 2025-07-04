@@ -10,6 +10,9 @@ import { TypeCas } from '../../../gs-api/typedecas/typeCas';
 import { TypeCasService } from '../../../gs-api/typedecas/typeCas/type-cas.service';
 import { DataTableConfiService } from '../../services/dataTableConfig/data-table-confi.service';
 import { MessageService } from '../../services/messages-service/message.service';
+import { GsServiceService } from '../../../gs-api/gestionnaire/ges/gs-service.service';
+import { getCurrentUser } from '../../services/fonctionUtils/get-current-user';
+import { Role } from '../../../gs-api/roles/role';
 
 @Component({
   selector: 'all-types-cas',
@@ -24,9 +27,11 @@ export class AllTypesCasComponent implements OnInit, OnDestroy, AfterViewInit {
 
   successMessage: string | string[] | null = '';
   errorMessage = '';
+  isAdmin: boolean = false;
 
   typesCas: TypeCas[] = [];
   orgExternes: OrgExterne[] = [];
+  roles: Role[] = [];
 
   typeCas: TypeCas = {
     destination: {}
@@ -44,7 +49,8 @@ export class AllTypesCasComponent implements OnInit, OnDestroy, AfterViewInit {
     private orgExterneService: OrgExterneService,
     private dataTableConfig: DataTableConfiService,
     private renderer: Renderer2,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private gestionnaireService: GsServiceService
   ) { }
 
   ngOnInit(): void {
@@ -80,8 +86,9 @@ export class AllTypesCasComponent implements OnInit, OnDestroy, AfterViewInit {
 
     });
 
-    this.getTypesCas();
     this.getOrgExternes();
+    this.getGestionnaire();
+    this.getTypesCas();
   }
 
   getTypesCas(): void {
@@ -109,7 +116,7 @@ export class AllTypesCasComponent implements OnInit, OnDestroy, AfterViewInit {
   getOrgExternes(): void {
     this.orgExterneService.getOrgExternes().subscribe({
       next: orgExternes => {
-        this.orgExternes = orgExternes;
+        this.orgExternes = orgExternes.filter(o => o.active);
       },
       error: () => {
         this.errorMessage = 'Erreur lors du chargement des organismes externes.';
@@ -143,22 +150,30 @@ export class AllTypesCasComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    if (!this.typeCas.destination.name?.trim()) {
+    if (!this.typeCas.destination.name?.trim() && this.isAdmin) {
       this.errorMessage = 'Veuillez choisir un organisme.';
       return;
     }
-
-    this.typeCasService.addTypeCas(this.typeCas).subscribe({
-      next: () => {
-        this.messageService.setMessage(`Le type de cas '${this.typeCas.type}' a bien été ajouté.`);
-        this.resetForm();
-        this.getTypesCas();
-        document.getElementById('add-close')?.click();
+    this.orgExterneService.getOrgExterneByName(this.typeCas.destination.name!).subscribe({
+      next: (org) => {
+        this.typeCas.destination = org;
+        this.typeCasService.addTypeCas(this.typeCas).subscribe({
+          next: () => {
+            this.messageService.setMessage(`Le type de cas '${this.typeCas.type}' a bien été ajouté.`);
+            this.resetForm();
+            this.getTypesCas();
+            document.getElementById('add-close')?.click();
+          },
+          error: () => {
+            this.errorMessage = "Erreur lors de l'ajout du type de cas.";
+          }
+        });
       },
-      error: error => {
+      error: () => {
         this.errorMessage = "Erreur lors de l'ajout du type de cas.";
       }
-    });
+    })
+
   }
 
   canHide(id: number, target: string): void {
@@ -187,8 +202,25 @@ export class AllTypesCasComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  getGestionnaire(): void {
+    const user = getCurrentUser();
+    const id = user.id;
+    this.gestionnaireService.getUser(id).subscribe({
+      next: (gestionnaire) => {
+        this.roles = gestionnaire.roles!;
+      }
+    })
+  }
+
   disableTypeCas(typesCas: TypeCas[]): TypeCas[] {
-    return typesCas.filter(cas => cas.active);
+    this.isAdmin = this.roles.some(role => role.role?.toUpperCase() === "ADMIN")
+    if (this.isAdmin) {
+      return typesCas.filter(t => t.active);
+    }
+
+    return typesCas.filter(t =>
+      t.active && this.roles.some(role => role.profile === t.destination.name)
+    );
   }
 
   resetForm(): void {

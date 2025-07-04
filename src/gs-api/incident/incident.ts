@@ -2,16 +2,12 @@ export interface Incident {
     id?: number,
     decrireAction?: string,
     url?: string,
+    county?: string,
     active?: boolean,
     dateCreation?: Date,
     dateTraitement?: Date,
     dernierChEta?: Date,
     status?: string,
-    zone?: {
-        id?: number,
-        city?: string,
-        geometry?: string
-    },
     userLocation?: {
         latitude?: number,
         longitude?: number,

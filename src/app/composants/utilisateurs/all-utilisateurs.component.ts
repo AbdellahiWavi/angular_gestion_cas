@@ -1,7 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Config } from 'datatables.net';
 import { Subject } from 'rxjs';
-import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { DataTableDirective } from 'angular-datatables';
 import type * as dt from 'datatables.net';
 import { GsServiceService } from '../../../gs-api/gestionnaire/ges/gs-service.service';
@@ -10,7 +9,7 @@ import { Role } from '../../../gs-api/roles/role';
 import { WithRoleService } from '../../../gs-api/roles/role-service/with-role.service';
 import { DataTableConfiService } from '../../services/dataTableConfig/data-table-confi.service';
 import { MessageService } from '../../services/messages-service/message.service';
-import { data } from 'jquery';
+import { getCurrentUser } from '../../services/fonctionUtils/get-current-user';
 
 @Component({
   selector: 'all-utilisateurs',
@@ -142,7 +141,7 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy, AfterViewIni
   getRoles(): void {
     this.roleService.getRoles().subscribe({
       next: (roles: Role[]) => {
-        this.roles = roles;
+        this.roles = roles.filter(r => r.active);
       },
       error: () => {
         this.errorMsg = ["Erreur lors du chargement des rôles."];
@@ -207,12 +206,18 @@ export class AllUtilisateursComponent implements OnInit, OnDestroy, AfterViewIni
   hideUser(): void {
     document.getElementById('close')?.click();
 
+    const user = getCurrentUser();
     this.gestionnaireService.disableUser(this.id!).subscribe({
       next: () => {
-        this.successMsg = "L'utilisateur a bien été supprimé.";
+        if (this.id === user.id) {
+        this.errorMsg = ["Votre compte a bien été désactivé."];
+          localStorage.removeItem("userAuth");
+          return;
+        }
+        this.successMsg = "L'utilisateur a bien été désactivé.";
         this.getUsers();
       },
-      error: error => {
+      error: () => {
         this.errorMsg = ["Erreur lors de la suppression de l'utilisateur."];
       }
     });

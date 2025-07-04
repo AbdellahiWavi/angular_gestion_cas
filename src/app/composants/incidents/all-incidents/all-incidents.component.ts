@@ -5,12 +5,15 @@ import { DataTableConfiService } from '../../../services/dataTableConfig/data-ta
 import { Incident } from '../../../../gs-api/incident/incident';
 import { Subject } from 'rxjs';
 import { ServiceIncidentService } from '../../../../gs-api/incident/inc/service-incident.service';
-import { faEye, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Status } from '../status';
 import { DataTableDirective } from 'angular-datatables';
 import type * as dt from 'datatables.net';
 import { IncidentUpdateStatus } from '../../../../gs-api/incident/incidentUpdateStatus';
 import { Router } from '@angular/router';
+import { GsServiceService } from '../../../../gs-api/gestionnaire/ges/gs-service.service';
+import { getCurrentUser } from '../../../services/fonctionUtils/get-current-user';
+import { Gestionnaire } from '../../../../gs-api/gestionnaire/gestionnaire';
+import { Role } from '../../../../gs-api/roles/role';
 
 @Component({
   selector: 'app-all-incidents',
@@ -29,6 +32,7 @@ export class AllIncidentsComponent implements OnInit, OnDestroy, AfterViewInit {
   newStatus: string | null = null;
   incident: Incident = {};
   incidentUpdateStatus: IncidentUpdateStatus = {};
+  roles: Role[] = [];
 
   statusOptions = Object.entries(Status).map(([value, label]) => ({ value, label }));
   dtTrigger: Subject<any> = new Subject();
@@ -41,6 +45,7 @@ export class AllIncidentsComponent implements OnInit, OnDestroy, AfterViewInit {
     private messageService: MessageService,
     private dataTableConfig: DataTableConfiService,
     private incidentService: ServiceIncidentService,
+    private gestionnaireService: GsServiceService,
     private cdr: ChangeDetectorRef,
     private renderer: Renderer2,
     private router: Router
@@ -96,6 +101,7 @@ export class AllIncidentsComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     
     this.getIncidents();
+    this.getGestionnaire();
   }
 
   getIncidents(): void {
@@ -110,6 +116,16 @@ export class AllIncidentsComponent implements OnInit, OnDestroy, AfterViewInit {
         console.error('Error fetching incidents:', err);
       }
     });
+  }
+
+  getGestionnaire(): void {
+    const user = getCurrentUser();
+    const id = user.id;
+    this.gestionnaireService.getUser(id).subscribe({
+      next: (gestionnaire) => {
+        this.roles = gestionnaire.roles!;
+      }
+    })
   }
 
   ngAfterViewInit(): void {
@@ -218,7 +234,14 @@ export class AllIncidentsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   disableIncident(incidents: Incident[]): Incident[] {
-    return incidents.filter(incident => incident.active);;
+    const isAdmin = this.roles.some(role => role.role?.toUpperCase() === "ADMIN")
+    if (isAdmin) {
+      return incidents.filter(i => i.active);
+    }
+
+    return incidents.filter(i => 
+      i.active && this.roles.some(role => role.profile === i.typeCas?.destination?.name)
+    );
   }
 
   ngOnDestroy(): void {

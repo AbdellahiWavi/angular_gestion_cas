@@ -22,12 +22,8 @@ export class OrgExterneService {
     return this.http.post<void>(`${this.gestionCasApi}/organismeext/add`, organismeext);
   }
 
-  updateOrgExterne(OrgExterne: OrgExterne): Observable<OrgExterne> {
-    return this.http.put<OrgExterne>(`${this.gestionCasApi}/organismeext/update`, OrgExterne);
-  }
-
-  deleteOrgExterne(OrgExterneId?: number): Observable<void> {
-    return this.http.delete<void>(`${this.gestionCasApi}/organismeext/delete/${OrgExterneId}`);
+  getOrgExterneByName(orgExterneName: string): Observable<OrgExterne> {
+    return this.http.get<OrgExterne>(`${this.gestionCasApi}/organismeext/orgByName/${orgExterneName}`);
   }
 
   findOrgExt(orgExtId: number): Observable<OrgExterne> {

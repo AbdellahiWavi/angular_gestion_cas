@@ -15,5 +15,5 @@
 }
 
 .border-left-danger {
-  border-left: .25rem solid #e74a3b;
+  border-left: .25rem solid #e74a3b!important;
 }

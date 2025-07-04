@@ -1,5 +1,4 @@
-import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import * as L from 'leaflet';
 import { MarkerService } from '../marker.service';
 import { Incident } from '../../../gs-api/incident/incident';
@@ -41,7 +40,7 @@ export class MapComponent implements OnChanges {
     if (changes['incident'] && this.incident?.userLocation?.latitude && this.incident?.userLocation?.longitude) {
       const lat = Number(this.incident.userLocation?.latitude);
       const lon = Number(this.incident.userLocation?.longitude);
-      const city = String(this.incident.zone?.city);
+      const city = String(this.incident.county);
       
       if (lat !== 0 && lon !== 0) {
         this.initMap(lat, lon);

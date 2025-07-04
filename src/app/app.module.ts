@@ -37,6 +37,7 @@ import { PageRoleComponent } from './pages/roles/page-role.component';
 import { PageAllTypesCasComponent } from './pages/typesCas/page-all-types-cas.component';
 import { PageAllUtilisateursComponent } from './pages/utilisateurs/page-all-utilisateurs.component';
 import { PageSignUpAdminComponent } from './pages/page-sign-up-admin/page-sign-up-admin.component';
+import { BaseChartDirective, provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -76,10 +77,12 @@ import { PageSignUpAdminComponent } from './pages/page-sign-up-admin/page-sign-u
     AppRoutingModule,
     FontAwesomeModule,
     DataTablesModule,
-    FormsModule
+    FormsModule,
+    BaseChartDirective
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
+    provideCharts(withDefaultRegisterables()),
     MarkerService,
     {
       provide: HTTP_INTERCEPTORS,

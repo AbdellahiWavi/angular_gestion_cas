@@ -3,12 +3,16 @@
         <div class="h-100">
             <div class="sidebar-logo">
                 <img src="assets/images/author_logo.jpg">
-                <h4 >LISAMA-{{role}}</h4>
+                <h4>LISAMA {{profile}}</h4>
             </div>
             <ul class="sidebar-nav shadow">
-                <div class="input-group mx-auto mb-4 shadow" style="width: 85%!important;">
-                    <input type="text" class="form-control bg-primary rounded-1 just-sidebar" placeholder="Search" aria-label="Username" aria-describedby="basic-addon1">
-                    <span class="input-group-text rounded-1 bg-primary just-sidebar" id="basic-addon1"><fa-icon [icon]="faMagnifyingGlass"></fa-icon></span>
+                <!-- Barre de recherche -->
+                <div class="input-group mb-4 px-2">
+                    <input type="text" class="form-control bg-light border-0 rounded-start" placeholder="Rechercher..."
+                        aria-label="Recherche" />
+                    <span class="input-group-text bg-light border-0 rounded-end">
+                        <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+                    </span>
                 </div>
                 <li class="sidebar-item" [class.active]="currentUrl === '/tableBord'">
                     <a href="/tableBord" class="sidebar-link">
@@ -17,7 +21,7 @@
                     </a>
                 </li>
                 <app-menu></app-menu>
-            </ul>  
+            </ul>
         </div>
     </aside>
     <div class="main">

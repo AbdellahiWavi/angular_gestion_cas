@@ -22,7 +22,7 @@ import { PageSignUpAdminComponent } from './pages/page-sign-up-admin/page-sign-u
 const routes: Routes = [
   {
     path: 'login',
-    component: PageLoginComponent
+    component: PageLoginComponent,
   },
   {
     path: 'signUpAdmin',

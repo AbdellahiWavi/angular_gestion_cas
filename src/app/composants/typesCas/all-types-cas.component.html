@@ -50,7 +50,7 @@
                                     [(ngModel)]="typeCas.type">
                                 <label>type de cas</label>
                             </div>
-                            <div class="form-floating mb-3">
+                            <div class="form-floating mb-3" *ngIf="isAdmin">
                                 <select class="form-select" name="selectOrganisme" [(ngModel)]="typeCas.destination">
                                     <option [ngValue]="typeCas.destination">Choisir un organisme</option>
                                     @for (destination of orgExternes; track destination.idDestination) {

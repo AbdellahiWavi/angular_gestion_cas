@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    gestionCasApi: 'http://localhost:8081/gestiondecas'
+    gestionCasApi: 'http://localhost:8080/gestiondecas'
 };
